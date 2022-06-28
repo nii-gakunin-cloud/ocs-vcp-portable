@@ -1,0 +1,43 @@
+version: '2'
+
+# 1. .envまたは本ファイルのenviroment部分に以下の変数を設定すること
+# 例:VCP_VCC_PRIVATE_IPMASK=192.168.1.2/24
+# VCP_VCC_PRIVATE_IPMASK=
+# VCP_OFFICIAL_REGISTRY_ADDRESS=harbor.vcloud.nii.ac.jp
+# 2. cert ディレクトリに必要な証明書を入れておくこと
+# ca.pem
+# occtr_cert.pem
+# occctr_key.pem
+
+services:
+  # rc, 利用者に提供するもの
+  occtr:
+    image: harbor.vcloud.nii.ac.jp/vcp/occtr:${TAG}
+    network_mode: host
+    # port
+    # VCP REST API
+    # 443
+    # Vault
+    # 8443
+    volumes:
+      # SSL CA cert (ca.crt)
+      # 設定: SSL CA server cert, key occtr_cert.pem, occtr_cert.key
+      - ./cert:/opt/occ/etc/httpd/ssl_conf/cert/:ro
+      - ./config:/opt/occ/env/occtr/docker/config:ro
+
+      # VCコントローラで永続化したいデータ
+      - ./volume/opt/occ/var:/opt/occ/var
+      - ./volume/opt/occ/.ssh:/opt/occ/.ssh
+      - ./volume/opt/occ/vc:/opt/occ/vc
+    environment:
+      - VCP_VCC_PRIVATE_IPMASK=${VCP_VCC_PRIVATE_IPMASK}
+      - VCP_OFFICIAL_REGISTRY_ADDRESS=${VCP_OFFICIAL_REGISTRY_ADDRESS}
+      - CONSUL_BASE_URL=${CONSUL_BASE_URL}
+
+  # grafanaを /grafana のsubdirで提供するように設定済み
+  nginx:
+    image: nginx:1.16.1
+    # port 8080
+    network_mode: host
+    volumes:
+       - ./config/nginx.conf:/etc/nginx/nginx.conf:ro

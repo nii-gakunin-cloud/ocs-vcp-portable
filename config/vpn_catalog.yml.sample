@@ -1,0 +1,39 @@
+cci_version: '1.0'
+
+# AWS example
+aws:
+  default:
+    aws_availability_zone: ap-northeast-1a
+    aws_region: ap-northeast-1
+    aws_vpc_subnet_id: subnet-*****
+    aws_vpc_security_group_id: sg-*****
+    private_network_ipmask: 172.30.2.0/24
+
+sakura:
+  default:
+    sakura_local_switch_id: ******
+    sakura_private_subnet_gateway_ip: 172.23.1.1
+    sakura_zone: tk1a
+    private_network_ipmask: 172.23.1.0/24
+
+# Oracle Cloud example
+oracle:
+  default:
+    oracle_tenancy_ocid: ocid1.tenancy.oc1..aaaaaaaare3*****
+    oracle_compartment_id: ocid1.compartment.oc1..aaaaaaaat4*****
+    oracle_subnet_id: ocid1.subnet.oc1.ap-tokyo-1.aaaaaaaajz*****
+    oracle_region: ap-tokyo-1
+    oracle_availability_domain: mkro:AP-TOKYO-1-AD-1
+    private_network_ipmask: 172.24.2.0/24
+
+# Oracle Cloud 設定項目と Web コンソールでの確認先
+#   oracle_tenancy_ocid :テナンシID（管理 >> テナンシ情報）
+#   oracle_compartment_id :コンパートメントID（アイデンティティ >> コンパートメント >> コンパートメント情報）
+#   oracle_subnet_id :サブネットID（ネットワーキング >> 仮想クラウド・ネットワーク >> VCN名 >> サブネット情報）
+#   oracle_region :リージョン（管理 >> 地域管理 >> リージョン識別子、または最上部のリージョン名 >> リージョン管理）
+#   oracle_availability_domain :可用性ドメイン（コンピュート >> インスタンス >> インスタンス情報 *注 ）
+# *注 :可用性ドメインの値はOracleクラウドのユーザごとに異なるため、Web UI からインスタンスを作成してみることで値を確認する必要がある。
+
+# SSH provisioning
+onpremises:
+  default: {}
