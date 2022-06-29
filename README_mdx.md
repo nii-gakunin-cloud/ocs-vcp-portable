@@ -15,14 +15,13 @@
     - 仮想ディスク容量: 40GB以上
 
 - mdxの仮想マシン上で、Portable VCCセットアップ・スクリプトを実行する。
-    - `init_mdx_pvcc.sh` をmdx仮想マシン上にコピー、root権限で実行
+    - `./mdx/init_mdx_pvcc.sh` を実行する。（sudo権限が必要）
     - セットアップ・スクリプトにより以下のインストール、設定等が行われる。
         - Docker CE, Docker Composeインストール
         - Portable VCCのコンテナイメージ取得、起動
         - Portable VCCの初期設定
         - Jupyter Notebookサーバのコンテナイメージ取得、起動
-    - VCP REST API アクセストークンが以下の `tokenrc` ファイルに出力される。  
-      `(スクリプト実行ディレクトリ)/portable-vcc-*/tokenrc`
+    - 正常終了すると、VCP REST API アクセストークンが `./tokenrc` ファイルに出力される。
 
 ## 2. VCP SDK初期設定
 
@@ -49,9 +48,8 @@ VCPの既存サーバ(SSH)モードを使用するために必要なmdx仮想マ
 
 - sshd Port を 22 から 20022 に変更
 - Docker CE をインストール
-- Portable VCCの公開鍵を `~mdxuser/.ssh/authorized_keys` に追加
-    - Portable VCCセットアップ・スクリプト実行時ディレクトリの以下の公開鍵  
-      `./portable-vcc-*/volume/opt/occ/.ssh/id_rsa.pub`
+- Portable VCコントローラ公開鍵 `./volume/opt/occ/.ssh/id_rsa.pub` を `~mdxuser/.ssh/authorized_keys` に追加する。  
+  （VCコントローラからVCノード用のmdx仮想マシンにSSH接続する必要があるため。）
 
 ## 4. OCSテンプレートのNotebook実行
 ### 動作確認済みのテンプレート

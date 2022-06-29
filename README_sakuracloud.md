@@ -26,16 +26,14 @@
 
 ## 2. Portable VCコントローラのセットアップ
 - さくらのクラウドのサーバ上で、Portable VCCセットアップ・スクリプトを実行する。 
-    - `init_sakura_pvcc.sh` をサーバ上にコピー、root権限で実行
+    - `./sakuracloud/init_sakura_pvcc.sh` を実行する。（sudo権限が必要）
     - セットアップ・スクリプトにより以下のインストール、設定等が行われる。
         - Docker CE, Docker Composeインストール
         - Portable VCCのコンテナイメージ取得、起動
         - Jupyter Notebookサーバのコンテナイメージ取得、起動
 
-- クラウド仮想ネットワーク定義ファイル `vpn_catalog.yml` を記述する。
-    - `init_sakura_pvcc.sh` 実行ディレクトリの以下のファイル
-        - `./portable-vcc-*/config/vpn_catalog.yml` 
-    - さくらのクラウドで使用するプライベートネットワークの情報を記述する。
+- クラウド仮想ネットワーク定義ファイル `./config/vpn_catalog.yml` を編集する。
+    - さくらのクラウドで使用するプライベートネットワーク情報を追記する。
 
     ```
     sakura:
@@ -50,33 +48,28 @@
         private_network_ipmask: 172.23.1.0/24
     ```
 
-- さくらのクラウド向けネットワーク初期化設定 `sakura_config.yml` を記述する。
-    - `init_sakura_pvcc.sh` 実行ディレクトリの以下のファイル
-        - `./portable-vcc-*/config/sakura_config.yml`
+- さくらのクラウド向けネットワーク初期化設定 `./config/sakura_config.yml` を作成する。
     - さくらのクラウドで起動するVCノードに割り当てるプライベートIPアドレスを登録する。 
 
     ```
     default: # クラウド仮想ネットワーク定義ファイル上のネットワーク名
       prefix_len: 24
       ip_addresses:
-        - 172.23.1.2
-        - 172.23.1.3
-        - 172.23.1.4
-        - 172.23.1.5
-        - 172.23.1.6
+        - 172.23.1.12
+        - 172.23.1.13
+        - 172.23.1.14
+        - 172.23.1.15
+        - 172.23.1.16
     ```
 
 - VCコントローラの初期化処理を行う。
     - さくらのクラウドのサーバ上で、VCコントローラを初期化するための以下のコマンドを実行する。
+    - 正常終了すると、VCP REST API アクセストークンが `./tokenrc` ファイルに出力される。
 
     ```
-    cd portable-vcc-*
     sudo docker-compose exec -T occtr ./init.sh
     sudo docker-compose exec -T occtr ./create_token.sh | tee tokenrc
     ```
-
-    - 成功すると、VCP REST API アクセストークンが以下の `tokenrc` ファイルに出力される。
-        - `(セットアップスクリプト実行ディレクトリ)/portable-vcc-*/tokenrc`
 
 ## 3. VCP SDK初期設定
 
