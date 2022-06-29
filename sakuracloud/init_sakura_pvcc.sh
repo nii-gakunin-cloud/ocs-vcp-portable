@@ -55,9 +55,12 @@ sudo docker-compose up -d nginx occtr
 
 # install VCP-Jupyter Notebook (include VCP SDK)
 sudo bash vcp-jupyter-$VCP_JUPYTER_VERSION.sh $JUPYTER_NOTEBOOK_PASSWORD
+sleep 5
 http_code=$(curl localhost:8888/jupyter/login?next=%2Fjupyter%2Ftree%3F -w '%{http_code}\n' -o /dev/null -s)
 test "$http_code" -eq 200
 
 sudo docker cp cert/ca.pem cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888:/usr/local/share/ca-certificates/vcp_ca.crt
 sudo docker exec cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888 update-ca-certificates
+
+echo "setup was completed."
 

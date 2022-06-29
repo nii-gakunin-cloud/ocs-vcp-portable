@@ -25,7 +25,7 @@ if [ -n "$3" ]; then
 fi
 
 echo port "$port"
-echo sudir "$subdir"
+echo subdir "$subdir"
 
 #curl -fsSL https://s3-ap-northeast-1.amazonaws.com/vcp-jupyternotebook/$release/env > env
 # s3上のenvでrelease (overwrite), JUPYTER_TAG を定義している

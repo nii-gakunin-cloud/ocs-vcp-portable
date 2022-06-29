@@ -49,6 +49,7 @@ sudo docker-compose exec -T occtr ./create_token.sh | tee tokenrc
 
 # install VCP-Jupyter Notebook (include VCP SDK)
 sudo bash vcp-jupyter-$VCP_JUPYTER_VERSION.sh $JUPYTER_NOTEBOOK_PASSWORD
+sleep 5
 http_code=$(curl localhost:8888/jupyter/login?next=%2Fjupyter%2Ftree%3F -w '%{http_code}\n' -o /dev/null -s)
 test "$http_code" -eq 200
 
@@ -57,4 +58,6 @@ sudo docker exec cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888 update-ca-ce
 
 # output VCP API token
 echo VCP REST API token: `cat tokenrc`
+
+echo "setup was completed."
 
