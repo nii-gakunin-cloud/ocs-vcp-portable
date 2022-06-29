@@ -1,6 +1,5 @@
 #!/bin/bash
 
-PORTABLE_VCC_VERSION=22.04.1-rc0
 VCP_JUPYTER_VERSION=22.04.0
 JUPYTER_NOTEBOOK_PASSWORD=passw0rd
 
@@ -36,10 +35,8 @@ sudo docker version
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose 
 
-# install VCP Portable Controller
-curl -O https://vcpdev-debug.s3.ap-northeast-1.amazonaws.com/portable-vcc-rc/portable-vcc-$PORTABLE_VCC_VERSION.tgz
-tar xf portable-vcc-$PORTABLE_VCC_VERSION.tgz
-cd portable-vcc-$PORTABLE_VCC_VERSION/
+# setup VC Controller
+cd $(dirname $0)/..
 
 cat << EOF > config/vpn_catalog.yml
 cci_version: '1.0'
@@ -63,7 +60,4 @@ test "$http_code" -eq 200
 
 sudo docker cp cert/ca.pem cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888:/usr/local/share/ca-certificates/vcp_ca.crt
 sudo docker exec cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888 update-ca-certificates
-
-# output VCP API token
-echo VCP REST API token: `cat tokenrc`
 
