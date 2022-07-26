@@ -7,7 +7,7 @@ subdir=jupyter
 JUPYTER_TAG=20220209-ssl-cc
 
 # release, portは必要な場合変える
-release=22.04.0
+release=22.04.1
 port=8888
 
 if [ "$passwd" = "" ]; then
