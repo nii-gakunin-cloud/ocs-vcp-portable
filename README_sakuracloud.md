@@ -11,6 +11,7 @@
 
 - さくらのクラウドでサーバを1個作成する。
     - アーカイブ選択: `Ubuntu Server 20.04.* LTS 64bit`
+      * **注意** `(cloudimg)` 表記の **無いほう** を選択
     - メモリ量: 4GB以上
     - 仮想ディスク容量: 40GB以上
     - NIC: インターネットに接続
@@ -95,7 +96,7 @@ Portable VCコントローラ用のサーバ上に起動したJupyter Notebook�
 ## 4. VCノード起動確認
 
 - Jupyter Notebookへログイン後のトップページにある「VCP SDKを利用するサンプルコード」のNotebookから選択して実行する。
-  - さくらのクラウドノードの起動 `sdk_test/04_exec_server-sakura.ipynb`
+  - さくらのクラウドノードの起動 `sdk_test/papermill/04_exec_server-sakura.ipynb`
 
 ## 5. ディスクサイズ・プランに関する注意点
 
