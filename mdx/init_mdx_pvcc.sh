@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VCP_JUPYTER_VERSION=22.04.1
-JUPYTER_NOTEBOOK_PASSWORD=passw0rd
+JUPYTER_NOTEBOOK_PASSWORD=handson2209
 
 LOCAL_NETWORK_IF=ens160
 
@@ -55,6 +55,9 @@ test "$http_code" -eq 200
 
 sudo docker cp cert/ca.pem cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888:/usr/local/share/ca-certificates/vcp_ca.crt
 sudo docker exec cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888 update-ca-certificates
+
+# for handson 22.09
+sudo usermod -G docker mdxuser
 
 # output VCP API token
 echo VCP REST API token: `cat tokenrc`
