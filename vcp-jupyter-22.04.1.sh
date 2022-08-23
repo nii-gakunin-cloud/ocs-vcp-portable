@@ -4,7 +4,7 @@
 passwd=$1
 subdir=jupyter
 
-JUPYTER_TAG=20220209-ssl-cc
+JUPYTER_TAG=20220408-dd4a
 
 # release, portは必要な場合変える
 release=22.04.1
