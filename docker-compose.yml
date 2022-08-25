@@ -12,7 +12,8 @@ version: '2'
 services:
   # rc, 利用者に提供するもの
   occtr:
-    image: harbor.vcloud.nii.ac.jp/vcp/occtr:${TAG}
+    #image: harbor.vcloud.nii.ac.jp/vcp/occtr:${TAG}
+    image: quay.io/ascade/vcp/occtr:${TAG}
     network_mode: host
     # port
     # VCP REST API

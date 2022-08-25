@@ -34,7 +34,8 @@ echo subdir "$subdir"
 
 # vcpsdk and notebook tar ball
 vcpsdk_file=https://s3-ap-northeast-1.amazonaws.com/vcp-jupyternotebook/${release}/jupyternotebook_vcpsdk-${release}.tgz
-image_name=harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:$JUPYTER_TAG
+#image_name=harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:$JUPYTER_TAG
+image_name=quay.io/ascade/vcpjupyter/cloudop-notebook:$JUPYTER_TAG
 
 # container name
 name=cloudop-notebook-$release-$subdir-$port
