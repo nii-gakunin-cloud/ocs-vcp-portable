@@ -59,6 +59,7 @@ sudo docker exec cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888 update-ca-ce
 
 # for handson 22.09
 sudo docker cp tokenrc cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888:/notebooks/notebook/token.txt
+sudo docker cp SETUP_handson2209.ipynb cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888:/notebooks/notebook/SETUP.ipynb
 sudo usermod -G docker mdxuser
 
 # output VCP API token
