@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VCP_JUPYTER_VERSION=22.04.1
-JUPYTER_NOTEBOOK_PASSWORD=passw0rd
+VCP_JUPYTER_VERSION=22.10.0
+JUPYTER_NOTEBOOK_PASSWORD=handson2212
 
 EXIT_NETWORK_IF=eth0
 LOCAL_NETWORK_IF=eth1
@@ -35,23 +35,50 @@ sudo docker version
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose 
 
+# for handson 22.12
+cat << EOF | sudo tee /etc/netplan/90-config.yaml
+network:
+  ethernets:
+    eth1:
+      addresses: [192.168.1.254/24]
+EOF
+
+sudo netplan apply
+
 # setup VC Controller
 cd $(dirname $0)/..
-
-cat << EOF > config/vpn_catalog.yml
-cci_version: '1.0'
-onpremises:
-  default: {}
-EOF
 
 VCP_VCC_PRIVATE_IPMASK=$(ip --oneline --family inet address show dev $LOCAL_NETWORK_IF|awk '{print $4}')
 sed -i '/^VCP_VCC_PRIVATE_IPMASK/d' .env
 echo "VCP_VCC_PRIVATE_IPMASK=$VCP_VCC_PRIVATE_IPMASK" >> .env
 
+# for handson 22.12
+cat << EOF > config/vpn_catalog.yml
+cci_version: '1.0'
+sakura:
+  default:
+    sakura_local_switch_id: "000000000000"
+    sakura_zone: tk1a
+    sakura_private_subnet_gateway_ip: 192.168.1.254
+    private_network_ipmask: 192.168.1.0/24
+EOF
+
+# for handson 22.12
+cat << EOF > config/sakura_config.yml
+default:
+  prefix_len: 24
+  ip_addresses:
+    - 192.168.1.12
+    - 192.168.1.13
+    - 192.168.1.14
+    - 192.168.1.15
+    - 192.168.1.16
+EOF
+
 cp dummy_cert/* cert/
 sudo docker-compose up -d nginx occtr
-#sudo docker-compose exec -T occtr ./init.sh
-#sudo docker-compose exec -T occtr ./create_token.sh | tee tokenrc
+sudo docker-compose exec -T occtr ./init.sh
+sudo docker-compose exec -T occtr ./create_token.sh | tee tokenrc
 
 # install VCP-Jupyter Notebook (include VCP SDK)
 sudo bash vcp-jupyter-$VCP_JUPYTER_VERSION.sh $JUPYTER_NOTEBOOK_PASSWORD
@@ -61,6 +88,13 @@ test "$http_code" -eq 200
 
 sudo docker cp cert/ca.pem cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888:/usr/local/share/ca-certificates/vcp_ca.crt
 sudo docker exec cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888 update-ca-certificates
+
+# for handson 22.12
+sudo docker cp tokenrc cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888:/notebooks/notebook/token.txt
+sudo docker cp SETUP_handson2212.ipynb cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888:/notebooks/notebook/SETUP.ipynb
+
+# output VCP API token
+echo VCP REST API token: `cat tokenrc`
 
 echo "setup was completed."
 
