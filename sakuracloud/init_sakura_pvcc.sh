@@ -35,16 +35,6 @@ sudo docker version
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose 
 
-# for handson 22.12
-cat << EOF | sudo tee /etc/netplan/90-config.yaml
-network:
-  ethernets:
-    eth1:
-      addresses: [192.168.1.254/24]
-EOF
-
-sudo netplan apply
-
 # setup VC Controller
 cd $(dirname $0)/..
 
@@ -58,7 +48,7 @@ cci_version: '1.0'
 sakura:
   default:
     sakura_local_switch_id: "000000000000"
-    sakura_zone: tk1a
+    sakura_zone: is1b
     sakura_private_subnet_gateway_ip: 192.168.1.254
     private_network_ipmask: 192.168.1.0/24
 EOF
