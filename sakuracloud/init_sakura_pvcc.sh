@@ -43,6 +43,9 @@ sed -i '/^VCP_VCC_PRIVATE_IPMASK/d' .env
 echo "VCP_VCC_PRIVATE_IPMASK=$VCP_VCC_PRIVATE_IPMASK" >> .env
 
 # for handson 22.12
+sudo apt-get -qq install -y netplan.io
+
+# for handson 22.12
 cat << EOF > config/vpn_catalog.yml
 cci_version: '1.0'
 sakura:
