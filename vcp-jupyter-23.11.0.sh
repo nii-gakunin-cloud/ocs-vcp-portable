@@ -1,14 +1,12 @@
 #!/bin/bash
 #set -e
-
 passwd=$1
 subdir=jupyter
 
-JUPYTER_TAG=20220209-ssl-cc
-
 # release, portは必要な場合変える
-release=22.04.1
+release=23.04.0
 port=8888
+JUPYTER_TAG=20220725-ssl-cc
 
 if [ "$passwd" = "" ]; then
     echo "Usage: $0 jupyter_login_password [port] [subdir]"
@@ -25,12 +23,7 @@ if [ -n "$3" ]; then
 fi
 
 echo port "$port"
-echo subdir "$subdir"
-
-#curl -fsSL https://s3-ap-northeast-1.amazonaws.com/vcp-jupyternotebook/$release/env > env
-# s3上のenvでrelease (overwrite), JUPYTER_TAG を定義している
-# envのリリースはvcpsdkでのリリース (例: 19.10.1 -> 19.10.0)
-#. ./env
+echo sudir "$subdir"
 
 # vcpsdk and notebook tar ball
 vcpsdk_file=https://s3-ap-northeast-1.amazonaws.com/vcp-jupyternotebook/${release}/jupyternotebook_vcpsdk-${release}.tgz
@@ -57,6 +50,7 @@ docker pull "$image_name"
 docker run -d --network host \
        --name "$name" \
        -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
+       -e "JUPYTERHUB_SERVICE_PREFIX=/$subdir/"  \
        -e "PASSWORD=$passwd" -e TZ=JST-9 -e "SUBDIR=$subdir" \
        --restart=always "$image_name"
 
