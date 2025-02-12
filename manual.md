@@ -24,20 +24,20 @@ VCPの機能を用いてクラウド環境のリソースを利用すること�
     VCPプラグイン実装をカスタマイズする必要がある。
 
 ### 2.2. 動作確認済みの OS, Distribution 環境
-* Ubuntu Server 20.04 LTS
-* Debian 10 (buster)
+* Ubuntu Server 22.04 LTS
+* ~~Debian 10 (buster)~~
 
 ### 2.3. 必須ソフトウェア
 VCコントローラの実行環境に以下のソフトウェアがインストールされていることを前提とする。
 
-* Docker (since version 20.10)
-* Docker Compose (since version 1.29)
+* Docker (since version 23.0.3)
+* Docker Compose (since version 2.31.0)
 
 ### 2.4. ディスク容量要件
-10 Gbyte 以上を推奨する。
+20 Gbyte 以上を推奨する。
 
-* ポータブルVCコントローラ Docker コンテナイメージ: 約 3 Gbyte
-* VCP SDK および JupyterNotebook Docker コンテナイメージ: 約 5 Gbyte
+* ポータブルVCコントローラ Docker コンテナイメージ: 約 5 Gbyte
+* VCP SDK および JupyterNotebook Docker コンテナイメージ: 約 9 Gbyte
 
 ### 2.5. ネットワーク要件
 

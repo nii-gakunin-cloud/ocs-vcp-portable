@@ -1,6 +1,7 @@
 #!/bin/bash
 
-VCP_JUPYTER_VERSION=23.11.0
+VCP_JUPYTER=vcp-jupyter-25.04.0.sh
+VCP_SDK_VERSION=23.04.0
 JUPYTER_NOTEBOOK_PASSWORD=passw0rd
 
 LOCAL_NETWORK_IF=ens160
@@ -45,19 +46,22 @@ echo "VCP_VCC_PRIVATE_IPMASK=$VCP_VCC_PRIVATE_IPMASK" >> .env
 cp dummy_cert/* cert/
 sudo docker-compose up -d nginx occtr
 sudo docker-compose exec -T occtr ./init.sh
-sudo docker-compose exec -T occtr ./create_token.sh | tee tokenrc
+sudo docker-compose exec -T occtr ./create_token.sh > tokenrc
 
 # install VCP-Jupyter Notebook (include VCP SDK)
-sudo bash vcp-jupyter-$VCP_JUPYTER_VERSION.sh $JUPYTER_NOTEBOOK_PASSWORD
+port=8888
+subdir=jupyter
+jupyter_release=20250401-ssl-cc
+sudo bash $VCP_JUPYTER $JUPYTER_NOTEBOOK_PASSWORD $port $subdir $VCP_SDK_VERSION $jupyter_release
 sleep 5
 http_code=$(curl localhost:8888/jupyter/login?next=%2Fjupyter%2Ftree%3F -w '%{http_code}\n' -o /dev/null -s)
 test "$http_code" -eq 200
 
-sudo docker cp cert/ca.pem cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888:/usr/local/share/ca-certificates/vcp_ca.crt
-sudo docker exec cloudop-notebook-$VCP_JUPYTER_VERSION-jupyter-8888 update-ca-certificates
+container_name=cloudop-notebook-$VCP_SDK_VERSION-$subdir-$port
+sudo docker cp cert/ca.pem $container_name:/usr/local/share/ca-certificates/vcp_ca.crt
+sudo docker exec $container_name update-ca-certificates
 
 # output VCP API token
 echo VCP REST API token: `cat tokenrc`
 
 echo "setup was completed."
-
