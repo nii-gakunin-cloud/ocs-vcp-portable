@@ -43,6 +43,7 @@ VCP_VCC_PRIVATE_IPMASK=$(ip --oneline --family inet address show dev $LOCAL_NETW
 sed -i '/^VCP_VCC_PRIVATE_IPMASK/d' .env
 echo "VCP_VCC_PRIVATE_IPMASK=$VCP_VCC_PRIVATE_IPMASK" >> .env
 
+mkdir -p cert
 cp dummy_cert/* cert/
 sudo docker-compose up -d nginx occtr
 sudo docker-compose exec -T occtr ./init.sh

@@ -217,7 +217,7 @@ default: # クラウド仮想ネットワーク定義ファイル上のネット
 項目|意味
 ----|------
 prefix_len|IPv4サブネットのprefix length
-ip_addresses|クラウドインスタンスに割り当てるするIPアドレスのリスト
+ip_addresses|クラウドインスタンスに割り当てるIPアドレスのリスト
 
 ### 3.5. IPsec 接続 (AWS)
 クラウド仮想ネットワークとVCコントローラ間をVPN接続するために IPsec 接続環境を準備する。
