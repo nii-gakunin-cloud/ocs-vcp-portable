@@ -28,24 +28,31 @@ VCPの機能を用いてクラウド環境のリソースを利用すること�
 * ~~Debian 10 (buster)~~
 
 ### 2.3. 必須ソフトウェア
-VCコントローラの実行環境に以下のソフトウェアがインストールされていることを前提とする。
+VCコントローラの実行環境に以下のソフトウェアがインストールされていることを前提とする。  
 
-* Docker (since version 23.0.3)
-* Docker Compose (since version 2.31.0)
+※ mdx・さくらのクラウド用の構築スクリプトはDockerインストールも行うため、事前にインストールする必要は無い。
 
-### 2.4. ディスク容量要件
+* Docker (since version 23.0)
+* Docker Compose (since version 2.31)
+
+### 2.4. メモリ要件
+4 Gbyte 以上を推奨する。  
+例：  
+  - aws: `t3.medium`
+  - mdx: 3CPUパック
+
+### 2.5. ディスク容量要件
 20 Gbyte 以上を推奨する。
 
 * ポータブルVCコントローラ Docker コンテナイメージ: 約 5 Gbyte
 * VCP SDK および JupyterNotebook Docker コンテナイメージ: 約 9 Gbyte
 
-### 2.5. ネットワーク要件
+### 2.6. ネットワーク要件
 
 対象とするクラウドの仮想ネットワーク環境とポータブルVCコントローラ間を VPN 接続することにより、
 クラウドインスタンスに対してプライベートIPアドレスによるアクセスが可能であること。
 
 本ドキュメントでは、クラウドサービス(e.g. AWS) が提供する IPsec 接続を利用する方法を例として説明する。
-
 
 ```
 ポータブルVCコントローラ
@@ -365,10 +372,10 @@ VCP SDKの実行方法は以下の2通りの方法がある。
 #### 方法1: Jupyter Notebook を使用する
 
 1. 以下のコマンドを実行して、Jupyter Notebookのコンテナを起動する。  
-  `cloudop-notebook-20.04.0-jupyter` という名前でコンテナが実行される。
+  `cloudop-notebook-25.04.0-jupyter` という名前でコンテナが実行される。
 
 ```
-# bash vcp-jupyter-20.04.0.sh {{Notebookサーバに設定するパスワード}}
+# bash vcp-jupyter.sh {{Notebookサーバに設定するパスワード}}
 ```
 
 2. `./cert/ca.pem` をNotebookコンテナにインストールする。

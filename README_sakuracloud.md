@@ -10,7 +10,7 @@
 ## 1. Portable VCコントローラ用のサーバ、内部ネットワークの準備
 
 - さくらのクラウドでサーバを1個作成する。
-    - アーカイブ選択: `Ubuntu Server 20.04.* LTS 64bit`
+    - アーカイブ選択: `Ubuntu Server 24.04 LTS 64bit`
       * **注意** `(cloudimg)` 表記の **無いほう** を選択
     - メモリ量: 4GB以上
     - 仮想ディスク容量: 40GB以上
@@ -23,31 +23,11 @@
 - 作成したサーバに、NICを1個追加し、ローカルネットワーク用スイッチに接続する。
     - NICの追加 <https://manual.sakura.ad.jp/cloud/server/nic.html#id7>
     - NIC接続先の編集 <https://manual.sakura.ad.jp/cloud/server/nic.html#server-nic-edit>
-    - サーバのOSからは、ネットワーク・インターフェースとして新たに `eth1` が出現し、これにプライベートIPアドレスを付与する。
+    - サーバのOSからは、ネットワーク・インターフェースとして新たに `eth1` が出現する。
 
 ## 2. Portable VCコントローラのセットアップ
-- さくらのクラウドのサーバ上で、Portable VCCセットアップ・スクリプトを実行する。 
-    - `./sakuracloud/init_sakura_pvcc.sh` を実行する。（sudo権限が必要）
-    - セットアップ・スクリプトにより以下のインストール、設定等が行われる。
-        - Docker CE, Docker Composeインストール
-        - Portable VCCのコンテナイメージ取得、起動
-        - Jupyter Notebookサーバのコンテナイメージ取得、起動
 
-- クラウド仮想ネットワーク定義ファイル `./config/vpn_catalog.yml` を編集する。
-    - さくらのクラウドで使用するプライベートネットワーク情報を追記する。
-
-    ```
-    sakura:
-      default:
-        # 追加したスイッチの詳細情報にある「リソースID」
-        sakura_local_switch_id: "123456789012"
-        # ローカルネットワーク用に追加したNICに付与したIPアドレス
-        sakura_private_subnet_gateway_ip: 172.23.1.254
-        # 東京第1ゾーンの場合は tk1a を指定
-        sakura_zone: tk1a
-        # ローカルネットワーク用に追加したNICのネットワークアドレス/マスク
-        private_network_ipmask: 172.23.1.0/24
-    ```
+さくらのクラウドのサーバ上で以下の構築作業を行う。  
 
 - さくらのクラウド向けネットワーク初期化設定 `./config/sakura_config.yml` を作成する。
     - さくらのクラウドで起動するVCノードに割り当てるプライベートIPアドレスを登録する。 
@@ -63,14 +43,23 @@
         - 172.23.1.16
     ```
 
-- VCコントローラの初期化処理を行う。
-    - さくらのクラウドのサーバ上で、VCコントローラを初期化するための以下のコマンドを実行する。
-    - 正常終了すると、VCP REST API アクセストークンが `./tokenrc` ファイルに出力される。
+- さくらのクラウドのサーバ上で、Portable VCCセットアップ・スクリプトを実行する。 
+    - `./sakuracloud/init_sakura_pvcc.sh` を実行する。（sudo権限が必要）  
 
-    ```
-    sudo docker-compose exec -T occtr ./init.sh
-    sudo docker-compose exec -T occtr ./create_token.sh | tee tokenrc
-    ```
+      ```
+      sudo bash ./sakuracloud/init_sakura_pvcc.sh <スイッチのリソースID> <ゾーンID> <スイッチのネットワークアドレス>"
+      ```
+
+      ※ **`スイッチのリソースID`**: スイッチの情報画面で確認  
+      ※ **`ゾーンID`**: `is1a` `is1b` `tk1a` `tk1v` のいずれか  
+      ※ **`スイッチのネットワークアドレス`**: スイッチ一覧画面やサーバ一画面のスイッチ情報の「ネットワーク」で確認  
+
+    - セットアップ・スクリプトにより以下のインストール、設定等が行われる。
+        - Docker CE, Docker Composeインストール
+        - Portable VCCのコンテナイメージ取得、起動
+        - Jupyter Notebookサーバのコンテナイメージ取得、起動
+
+    - 正常終了すると、VCP REST API アクセストークンが `./tokenrc` ファイルに出力される。
 
 ## 3. VCP SDK初期設定
 
