@@ -46,6 +46,7 @@ docker run -d --network host \
        -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
        -e "JUPYTERHUB_SERVICE_PREFIX=/$subdir/"  \
        -e "PASSWORD=$passwd" -e TZ=JST-9 -e "SUBDIR=$subdir" \
+       -e "JUPYTER_PORT=$port" \
        --restart=always "$image_name"
 
 # extract vcpsdk to $HOME/vcp
