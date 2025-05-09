@@ -1,12 +1,6 @@
 #!/bin/bash
 #set -e
 passwd=$1
-subdir=jupyter
-
-# release, portは必要な場合変える
-release=23.04.0
-port=8888
-JUPYTER_TAG=20220725-ssl-cc
 
 if [ "$passwd" = "" ]; then
     echo "Usage: $0 jupyter_login_password [port] [subdir]"
@@ -14,23 +8,23 @@ if [ "$passwd" = "" ]; then
     exit 1
 fi
 
-if [ -n "$2" ]; then
-    port=$2
-fi
-
-if [ -n "$3" ]; then
-    subdir=$3
-fi
+# 以下は必要な場合変える
+port=${2:-8888}
+subdir=${3:-jupyter}
+vcpsdk_release=${4:-25.04.0}
+jupyter_release=${5:-20250401-ssl-cc}
 
 echo port "$port"
-echo sudir "$subdir"
+echo subdir "$subdir"
+echo vcpsdk_release "$vcpsdk_release"
+echo jupyter_release "$jupyter_release"
 
 # vcpsdk and notebook tar ball
-vcpsdk_file=https://s3-ap-northeast-1.amazonaws.com/vcp-jupyternotebook/${release}/jupyternotebook_vcpsdk-${release}.tgz
-image_name=harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:$JUPYTER_TAG
+vcpsdk_file=https://s3-ap-northeast-1.amazonaws.com/vcp-jupyternotebook/${vcpsdk_release}/jupyternotebook_vcpsdk-${vcpsdk_release}.tgz
+image_name=harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:$jupyter_release
 
 # container name
-name=cloudop-notebook-$release-$subdir-$port
+name=cloudop-notebook-$vcpsdk_release-$subdir-$port
 
 # check exist container
 result=$(docker ps -a | grep "$name" || true)
@@ -52,6 +46,7 @@ docker run -d --network host \
        -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
        -e "JUPYTERHUB_SERVICE_PREFIX=/$subdir/"  \
        -e "PASSWORD=$passwd" -e TZ=JST-9 -e "SUBDIR=$subdir" \
+       -e "JUPYTER_PORT=$port" \
        --restart=always "$image_name"
 
 # extract vcpsdk to $HOME/vcp
