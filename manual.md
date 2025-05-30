@@ -286,6 +286,7 @@ Libreswan をインストールして設定する手順について説明する�
 3. `ipsec.conf` ファイルを作成する
     - AWS VPC Dashboard の Site-to-Site VPN Connections から取得した設定ファイルの内容を編集して利用することが可能
       * (注) `auth=esp` 指定は削除すること
+      * (注) `modp1024`は利用不可の傾向のため`modp2048`等に変更すること
 
 `/etc/ipsec.conf`
 
@@ -305,8 +306,8 @@ conn tunnel1
      type=tunnel
      ikelifetime=8h
      keylife=1h
-     phase2alg=aes128-sha1;modp1024
-     ike=aes128-sha1;modp1024
+     phase2alg=aes128-sha1;modp2048
+     ike=aes128-sha1;modp2048
      keyingtries=%forever
      keyexchange=ike
      dpddelay=10
