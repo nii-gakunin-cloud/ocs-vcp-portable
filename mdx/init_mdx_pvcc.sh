@@ -48,9 +48,9 @@ echo "VCP_VCC_PRIVATE_IPMASK=$VCP_VCC_PRIVATE_IPMASK" >> .env
 
 mkdir -p cert
 cp dummy_cert/* cert/
-sudo docker-compose up -d nginx occtr
-sudo docker-compose exec -T occtr ./init.sh
-sudo docker-compose exec -T occtr ./create_token.sh > tokenrc
+sudo docker compose up -d nginx occtr
+sudo docker compose exec -T occtr ./init.sh
+sudo docker compose exec -T occtr ./create_token.sh > tokenrc
 
 # install VCP-Jupyter Notebook (include VCP SDK)
 port=8888
@@ -63,7 +63,7 @@ test "$http_code" -eq 200
 
 container_name=cloudop-notebook-$VCP_SDK_VERSION-$subdir-$port
 sudo docker cp cert/ca.pem $container_name:/usr/local/share/ca-certificates/vcp_ca.crt
-sudo docker exec $container_name update-ca-certificates
+sudo docker exec -u root $container_name update-ca-certificates
 
 # output VCP API token
 echo VCP REST API token: `cat tokenrc`
