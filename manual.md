@@ -22,9 +22,11 @@ VCPの機能を用いてクラウド環境のリソースを利用すること�
 * OpenStack
   - OpenStackをベースとするオンプレミスクラウド環境での動作実績はあるが、個別のOpenStack環境に合わせて
     VCPプラグイン実装をカスタマイズする必要がある。
+* Google Cloud Platform（GCP）
 
 ### 2.2. 動作確認済みの OS, Distribution 環境
 * Ubuntu Server 22.04 LTS
+* Ubuntu Server 24.04 LTS
 * ~~Debian 10 (buster)~~
 
 ### 2.3. 必須ソフトウェア
@@ -32,8 +34,8 @@ VCコントローラの実行環境に以下のソフトウェアがインスト
 
 ※ mdx・さくらのクラウド用の構築スクリプトはDockerインストールも行うため、事前にインストールする必要は無い。
 
-* Docker (since version 23.0)
-* Docker Compose (since version 2.31)
+* Docker
+* Docker Compose
 
 ### 2.4. メモリ要件
 4 Gbyte 以上を推奨する。  
@@ -148,6 +150,14 @@ sakura:
     sakura_zone: tk1a
     private_network_ipmask: 172.23.1.0/24
 
+gcp:
+  default:
+    gcp_project: sample-project
+    gcp_subnetwork: sample-project-priv-nw
+    gcp_region: asia-northeast1
+    gcp_zone: asia-northeast1-c
+    private_network_ipmask: 172.29.2.0/24
+
 # 以下は OpenStack ベースのクラウドに対応した設定の例。設定項目は環境により異なる。
 own-openstack:
   default:
@@ -190,6 +200,16 @@ oracle_region|リージョン|管理 >> 地域管理 >> リージョン識別子
 oracle_availability_domain|可用性ドメイン|コンピュート >> インスタンス >> インスタンス情報 (注)
 
 * (注) 可用性ドメインは Oracle Cloud のテナンシごとに異なり、Web UI からインスタンス作成を実行することで値を確認することができる。
+
+#### Google Cloud Platform（gcp）
+
+項目名|意味|Webコンソールでの確認先
+----------|-------------------------------|----
+gcp_project|プロジェクト名|
+gcp_subnetwork|サブネット名|
+gcp_region|リージョン|
+gcp_zone|ゾーン|
+private_network_ipmask|プライベートネットワーク|
 
 #### さくらのクラウド (sakura)
 
