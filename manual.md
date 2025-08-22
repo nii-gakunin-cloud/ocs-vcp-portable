@@ -22,6 +22,7 @@ VCPの機能を用いてクラウド環境のリソースを利用すること�
 * OpenStack
   - OpenStackをベースとするオンプレミスクラウド環境での動作実績はあるが、個別のOpenStack環境に合わせて
     VCPプラグイン実装をカスタマイズする必要がある。
+* Google Cloud Platform（GCP）
 
 ### 2.2. 動作確認済みの OS, Distribution 環境
 * Ubuntu Server 22.04 LTS
