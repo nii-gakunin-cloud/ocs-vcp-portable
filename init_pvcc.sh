@@ -2,9 +2,20 @@
 
 VCP_JUPYTER=vcp-jupyter.sh
 VCP_SDK_VERSION=25.10.0
-JUPYTER_NOTEBOOK_PASSWORD=passw0rd
+JUPYTER_NOTEBOOK_PASSWORD=$(cat /dev/urandom | base64 | fold -w 10 | head -n 1)
+DC_CMD="docker compose"
 
-LOCAL_NETWORK_IF=ens160
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <Network IF Name>"
+  exit 1
+fi
+
+if [ ! -f config/vpn_catalog.yml ]; then
+  echo "Setup config file first: config/vpn_catalog.yml"
+  exit 1
+fi
+
+LOCAL_NETWORK_IF=$1
 
 set -euo pipefail
 
@@ -33,13 +44,8 @@ sudo apt-get update -y
 VERSION_STRING=5:27.4.0-1~ubuntu.$(. /etc/os-release && echo "$VERSION_ID")~$(. /etc/os-release && echo "$VERSION_CODENAME")
 sudo apt-get install -y docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io docker-buildx-plugin docker-compose-plugin
 
-# setup VC Controller
-cd $(dirname $0)/..
-
 cat << EOF > config/vpn_catalog.yml
 cci_version: '1.0'
-onpremises:
-  default: {}
 EOF
 
 VCP_VCC_PRIVATE_IPMASK=$(ip --oneline --family inet address show dev $LOCAL_NETWORK_IF|awk '{print $4}')
@@ -48,24 +54,34 @@ echo "VCP_VCC_PRIVATE_IPMASK=$VCP_VCC_PRIVATE_IPMASK" >> .env
 
 mkdir -p cert
 cp dummy_cert/* cert/
-sudo docker-compose up -d nginx occtr
-sudo docker-compose exec -T occtr ./init.sh
-sudo docker-compose exec -T occtr ./create_token.sh > tokenrc
+sudo ${DC_CMD} up -d nginx occtr
+sudo ${DC_CMD} exec -T occtr ./init.sh
+sudo ${DC_CMD} exec -T occtr ./create_token.sh > tokenrc
 
 # install VCP-Jupyter Notebook (include VCP SDK)
+echo "$JUPYTER_NOTEBOOK_PASSWORD" > .jupyter_pass
 port=8888
 subdir=jupyter
 jupyter_release=20250401-ssl-cc
 sudo bash $VCP_JUPYTER $JUPYTER_NOTEBOOK_PASSWORD $port $subdir $VCP_SDK_VERSION $jupyter_release
-sleep 5
-http_code=$(curl localhost:8888/jupyter/login?next=%2Fjupyter%2Ftree%3F -w '%{http_code}\n' -o /dev/null -s)
-test "$http_code" -eq 200
+
+for i in {1..10}
+do
+  http_code=$(curl -s -o /dev/null -w '%{http_code}' \
+    "http://localhost:$port/jupyter/login?next=%2Fjupyter%2Ftree%3F" || echo 000)
+  if [ 200 -eq "$http_code" ]; then
+    break
+  fi
+  echo "Jupyter not ready. Retrying ... (${i})"
+  sleep 2
+done
 
 container_name=cloudop-notebook-$VCP_SDK_VERSION-$subdir-$port
 sudo docker cp cert/ca.pem $container_name:/usr/local/share/ca-certificates/vcp_ca.crt
-sudo docker exec $container_name update-ca-certificates
+sudo docker exec -u root $container_name update-ca-certificates
 
 # output VCP API token
 echo VCP REST API token: `cat tokenrc`
+echo Jupyter login pass: `cat .jupyter_pass`
 
 echo "setup was completed."
