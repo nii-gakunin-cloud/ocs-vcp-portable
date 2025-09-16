@@ -5,6 +5,8 @@ VCP_SDK_VERSION=25.10.0
 JUPYTER_NOTEBOOK_PASSWORD=$(cat /dev/urandom | base64 | fold -w 10 | head -n 1)
 DC_CMD="docker compose"
 CONFIG_DIR='config'
+CREDENTIALS_DIR='cred'
+CERTS_DIR='cert'
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <Network IF Name>"
@@ -55,14 +57,16 @@ VCP_VCC_PRIVATE_IPMASK=$(ip --oneline --family inet address show dev $LOCAL_NETW
 sed -i '/^VCP_VCC_PRIVATE_IPMASK/d' .env
 echo "VCP_VCC_PRIVATE_IPMASK=$VCP_VCC_PRIVATE_IPMASK" >> .env
 
-mkdir -p cert
-cp dummy_cert/* cert/
+vcc_token="$CREDENTIALS_DIR/tokenrc"
+mkdir -p "$CERTS_DIR" "$CREDENTIALS_DIR"
+cp dummy_cert/* "$CERTS_DIR/"
 sudo ${DC_CMD} up -d nginx occtr
 sudo ${DC_CMD} exec -T occtr ./init.sh
-sudo ${DC_CMD} exec -T occtr ./create_token.sh > tokenrc
+sudo ${DC_CMD} exec -T occtr ./create_token.sh > "$vcc_token"
 
 # install VCP-Jupyter Notebook (include VCP SDK)
-echo "$JUPYTER_NOTEBOOK_PASSWORD" > .jupyter_pass
+jupyter_password="$CREDENTIALS_DIR/.jupyter_pass"
+echo "$JUPYTER_NOTEBOOK_PASSWORD" > "$jupyter_password"
 port=8888
 subdir=jupyter
 jupyter_release=20250401-ssl-cc
@@ -80,11 +84,13 @@ do
 done
 
 container_name=cloudop-notebook-$VCP_SDK_VERSION-$subdir-$port
-sudo docker cp cert/ca.pem $container_name:/usr/local/share/ca-certificates/vcp_ca.crt
+sudo docker cp "$CERTS_DIR/ca.pem" $container_name:/usr/local/share/ca-certificates/vcp_ca.crt
 sudo docker exec -u root $container_name update-ca-certificates
 
 # output VCP API token
-echo VCP REST API token is in ./cred/tokenrc
-echo Jupyter login pass is in ./cred/jupyter_pass
+echo VCP REST API token is in $vcc_token
+echo Jupyter login pass is in $jupyter_password
+
+sudo apt-get -y autoremove
 
 echo "setup was completed."
