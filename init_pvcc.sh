@@ -69,7 +69,7 @@ jupyter_password="$CREDENTIALS_DIR/.jupyter_pass"
 echo "$JUPYTER_NOTEBOOK_PASSWORD" > "$jupyter_password"
 port=8888
 subdir=jupyter
-jupyter_release=20250401-ssl-cc
+jupyter_release=20251001-ssl-cc
 sudo bash $VCP_JUPYTER $JUPYTER_NOTEBOOK_PASSWORD $port $subdir $VCP_SDK_VERSION $jupyter_release
 
 for i in {1..10}

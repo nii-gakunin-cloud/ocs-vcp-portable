@@ -12,7 +12,7 @@ fi
 port=${2:-8888}
 subdir=${3:-jupyter}
 vcpsdk_release=${4:-25.10.0}
-jupyter_release=${5:-20250401-ssl-cc}
+jupyter_release=${5:-20251001-ssl-cc}
 
 echo port "$port"
 echo subdir "$subdir"
