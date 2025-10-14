@@ -39,7 +39,7 @@ proxmox:
     proxmox_pm_api_url: http://192.168.3.39:8006/api2/json
     proxmox_bridge: vmbr0
     proxmox_ipv4_gateway: 192.168.3.1
-    proxmox_target_node: vmconsole
+    proxmox_target_node: ["vmconsole"]
     proxmox_template_virtual_machine_name: vcp-ubuntu24
     proxmox_storage: local-lvm
     private_network_ipmask: 192.168.3.0/24
