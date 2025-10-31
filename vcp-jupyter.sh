@@ -11,8 +11,8 @@ fi
 # 以下は必要な場合変える
 port=${2:-8888}
 subdir=${3:-jupyter}
-vcpsdk_release=${4:-25.04.0}
-jupyter_release=${5:-20250401-ssl-cc}
+vcpsdk_release=${4:-25.10.0}
+jupyter_release=${5:-20251001-ssl-cc}
 
 echo port "$port"
 echo subdir "$subdir"

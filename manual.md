@@ -23,6 +23,8 @@ VCPの機能を用いてクラウド環境のリソースを利用すること�
   - OpenStackをベースとするオンプレミスクラウド環境での動作実績はあるが、個別のOpenStack環境に合わせて
     VCPプラグイン実装をカスタマイズする必要がある。
 * Google Cloud Platform（GCP）
+* Proxmox VE
+* mdx2
 
 ### 2.2. 動作確認済みの OS, Distribution 環境
 * Ubuntu Server 22.04 LTS
@@ -32,7 +34,7 @@ VCPの機能を用いてクラウド環境のリソースを利用すること�
 ### 2.3. 必須ソフトウェア
 VCコントローラの実行環境に以下のソフトウェアがインストールされていることを前提とする。  
 
-※ mdx・さくらのクラウド用の構築スクリプトはDockerインストールも行うため、事前にインストールする必要は無い。
+※ mdx/さくらのクラウド/Proxmox VE 用の構築スクリプトはDockerインストールも行うため、事前にインストールする必要は無い。
 
 * Docker
 * Docker Compose
@@ -41,10 +43,10 @@ VCコントローラの実行環境に以下のソフトウェアがインスト
 4 Gbyte 以上を推奨する。  
 例：  
   - aws: `t3.medium`
-  - mdx: 3CPUパック
+  - mdx: 3CPUパック（4.5GB）
 
 ### 2.5. ディスク容量要件
-20 Gbyte 以上を推奨する。
+30 Gbyte 以上を推奨する。
 
 * ポータブルVCコントローラ Docker コンテナイメージ: 約 5 Gbyte
 * VCP SDK および JupyterNotebook Docker コンテナイメージ: 約 9 Gbyte
@@ -393,17 +395,17 @@ VCP SDKの実行方法は以下の2通りの方法がある。
 #### 方法1: Jupyter Notebook を使用する
 
 1. 以下のコマンドを実行して、Jupyter Notebookのコンテナを起動する。  
-  `cloudop-notebook-25.04.0-jupyter` という名前でコンテナが実行される。
+  `cloudop-notebook-25.04.0-jupyter-{{ポート番号}}` という名前でコンテナが実行される。
 
 ```
-# bash vcp-jupyter.sh {{Notebookサーバに設定するパスワード}}
+$ bash vcp-jupyter.sh {{Notebookサーバに設定するパスワード}}
 ```
 
 2. `./cert/ca.pem` をNotebookコンテナにインストールする。
 
 ```
-# docker cp cert/ca.pem cloudop-notebook-20.04.0-jupyter:/usr/local/share/ca-certificates/vcp_ca.crt
-# docker exec cloudop-notebook-20.04.0-jupyter update-ca-certificates
+$ docker cp cert/ca.pem cloudop-notebook-25.04.0-jupyter-{{ポート番号}}:/usr/local/share/ca-certificates/vcp_ca.crt
+$ docker exec cloudop-notebook-25.04.0-jupyter-{{ポート番号}} update-ca-certificates
 ```
 
 コンテナ内に証明書が入るので、コンテナを再起動すると消える。コンテナ再起動後に実行する必要が有る。

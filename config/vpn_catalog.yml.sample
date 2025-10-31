@@ -34,6 +34,24 @@ oracle:
 #   oracle_availability_domain :可用性ドメイン（コンピュート >> インスタンス >> インスタンス情報 *注 ）
 # *注 :可用性ドメインの値はOracleクラウドのユーザごとに異なるため、Web UI からインスタンスを作成してみることで値を確認する必要がある。
 
+proxmox:
+  default:
+    proxmox_pm_api_url: http://192.168.3.39:8006/api2/json
+    proxmox_bridge: vmbr0
+    proxmox_ipv4_gateway: 192.168.3.1
+    proxmox_target_node: ["vmconsole"]
+    proxmox_template_virtual_machine_name: vcp-ubuntu24
+    proxmox_storage: local-lvm
+    private_network_ipmask: 192.168.3.0/24
+
+mdx2:
+  default:
+    tenant_name: tenantname
+    network_name: vcp
+    security_group: securitygroup
+    private_network_ipmask: 172.20.2.0/24
+    region: regionOne
+
 # SSH provisioning
 onpremises:
   default: {}
