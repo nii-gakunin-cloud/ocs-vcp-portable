@@ -47,6 +47,7 @@ VCPにて、マシン起動時に静的IPアドレスを設定しない場合（
 利用するマシンテンプレートで予めインストール済みの場合は、内容を変更してください。  
 
 ```
+mkdir -p /var/lib/vz/snippets
 cat <<'EOF' > /var/lib/vz/snippets/qemu-guest-agent-vcp.yml
 #cloud-config
 package_update: false
