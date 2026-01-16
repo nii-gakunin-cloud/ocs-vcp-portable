@@ -25,7 +25,9 @@ Ubuntu仮想マシンテンプレートを作成します。ここで作成し�
 proxmoxのコンソール等で実行することで仮想マシンテンプレート`vcp-ubuntu24`が作成されます。  
 [公式のテンプレート作成手順](https://pve.proxmox.com/wiki/Cloud-Init_Support)を参考に適宜パラメータ等を変更してください。（id: `9000` が利用中であれば変更するなど）  
 
-注: このテンプレートをcloneした仮想マシンのディスクサイズは、テンプレートに設定したもの以上でなければ、マシンが正常に利用できない可能性があります。テンプレートのディスクサイズは可能な限り小さくしておくことを推奨します。
+注: このテンプレートをcloneした仮想マシンのディスクサイズは、テンプレートに設定したもの以上でなければ、マシンが正常に利用できない可能性があります。テンプレートのディスクサイズは可能な限り小さくしておくことを推奨します。  
+
+proxmoxのコンソールで以下を実行します。
 
 ```
 wget https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img && \
@@ -36,31 +38,21 @@ qm set 9000 --ide2 local-lvm:cloudinit && \
 qm set 9000 --boot order=scsi0 && \
 qm resize 9000 scsi0 20G && \
 qm set 9000 --serial0 socket --vga serial0
-qm template 9000
 ```
 
-## 3. qemu-agentを利用するための設定  
-
-VCPにて、マシン起動時に静的IPアドレスを設定しない場合（DHCPを利用してIPアドレスを設定する場合）、起動したマシンのIPアドレスを知るため、qemu-agentを利用します。  
-これは、Proxmoxに予めcloud-init用設定ファイルを配置しておき、マシン起動時に反映させることで都度インストールするよう設定します。  
-以下をproxmoxのコンソールにて実行することで、vcpで利用する設定ファイル（`/var/lib/vz/snippets/qemu-guest-agent-vcp.yml`）が作成できます。  
-利用するマシンテンプレートで予めインストール済みの場合は、内容を変更してください。  
+マシンを起動し、必要なパッケージをインストールします。
+マシン起動時に静的IPアドレスを設定しない場合（DHCPを利用してIPアドレスを設定する場合）、起動したマシンのIPアドレスを取得するため、qemu-agentを利用します。  
+以下を起動したマシンにログインして実行します。  
 
 ```
-mkdir -p /var/lib/vz/snippets
-cat <<'EOF' > /var/lib/vz/snippets/qemu-guest-agent-vcp.yml
-#cloud-config
-package_update: false
-package_upgrade: false
-package_reboot_if_required: false
-runcmd:
-  - apt-get update && apt-get install -y ca-certificates qemu-guest-agent
-  - systemctl restart qemu-guest-agent
-  - systemctl enable qemu-guest-agent
-EOF
+sudo apt-get update && apt-get install -y ca-certificates qemu-guest-agent
+systemctl enable qemu-guest-agent
+sudo cloud-init clean --logs
 ```
 
-## 4. Potable VCコントローラ& Jupyterセットアップ
+proxmoxにアクセスし、マシンをシャットダウン後、テンプレート化してください。
+
+## 3. Potable VCコントローラ& Jupyterセットアップ
 
 ### 仮想マシン作成
 
