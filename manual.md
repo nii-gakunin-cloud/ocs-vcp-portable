@@ -16,9 +16,10 @@ VCPの機能を用いてクラウド環境のリソースを利用すること�
 * Oracle Cloud Infrastructure
 * Microsoft Azure
 * さくらのクラウド
-* 既存サーバ
+* 既存サーバ（`onpremises`）
   - Dockerインストール済みの sshログイン可能なLinuxマシンを「既存サーバ」として使用する
   - VCPでは既存サーバを onpremises というクラウドプロバイダとみなす
+  - mdx1は既存サーバモードで対応
 * OpenStack
   - OpenStackをベースとするオンプレミスクラウド環境での動作実績はあるが、個別のOpenStack環境に合わせて
     VCPプラグイン実装をカスタマイズする必要がある。
@@ -34,16 +35,13 @@ VCPの機能を用いてクラウド環境のリソースを利用すること�
 ### 2.3. 必須ソフトウェア
 VCコントローラの実行環境に以下のソフトウェアがインストールされていることを前提とする。  
 
-※ mdx/さくらのクラウド/Proxmox VE 用の構築スクリプトはDockerインストールも行うため、事前にインストールする必要は無い。
+※ 構築スクリプト(`init_pvcc.sh`)を用いて起動する場合はDockerインストールも行うため、事前にインストールする必要は無い。
 
 * Docker
 * Docker Compose
 
 ### 2.4. メモリ要件
-4 Gbyte 以上を推奨する。  
-例：  
-  - aws: `t3.medium`
-  - mdx: 3CPUパック（4.5GB）
+4 Gbyte 以上を推奨する。
 
 ### 2.5. ディスク容量要件
 30 Gbyte 以上を推奨する。
@@ -70,16 +68,16 @@ VCコントローラの実行環境に以下のソフトウェアがインスト
 ### 2.6. ディレクトリ構成
 
 ```
-README.md          ... 本ドキュメント
+manual.md          ... 本ドキュメント
+README.md          ... README
 docker-compse.yml  ... 起動設定ファイル
 .env               ... 環境変数設定ファイル
 cert/              ... SSL証明書
 dummy_cert/        ... localhostからのアクセスのみで使用可能な評価目的のSSL証明書
 config/            ... VCコントローラ設定ファイル
-  vpn_catalog.yml  ... クラウド仮想ネットワーク環境定義ファイル
-  (sakura_config.yml) ... さくらのクラウドのネットワーク設定ファイル(使用する場合)
+  nginx.conf       ... Nginx設定ファイル
+  vpn_catalog.yml.sample  ... クラウド仮想ネットワーク環境定義ファイルサンプル
 volume/            ... VCコントローラで保存するデータ
-
 aws/               ... AWS IPsec 接続環境構築スクリプト
 ```
 
@@ -115,62 +113,10 @@ VC コントローラに登録、参照するための機能がある。これ�
 
 クラウドVPNカタログでは、クラウドプロバイダ毎に複数の仮想プライベートネットワークを定義することができ、
 ポータブルVCコントローラでは YAML 形式で記述されたファイルを `config/vpn_catalog.yml` に配置する。
-
-クラウドVPNカタログの例を以下に示す。
-
-`config/vpn_catalog.yml`
-
-```
-cci_version: '1.0'
-
-aws:
-  default:
-    aws_region: ap-northeast-1
-    aws_vpc_subnet_id: subnet-fffffffffffffffff
-    aws_vpc_security_group_id: sg-fffffffffffffffff
-    aws_availability_zone: ap-northeast-1a
-    private_network_ipmask: 172.30.2.0/24
-
-  tokyo_subnet1:
-    aws_region: ap-northeast-1
-    aws_vpc_subnet_id: subnet-fffffffffffffffff
-    aws_vpc_security_group_id: sg-fffffffffffffffff
-    aws_availability_zone: ap-northeast-1c
-    private_network_ipmask: 172.30.3.0/24
-
-  us_west_subnet:
-    aws_region: us-west-2
-    aws_vpc_subnet_id: subnet-fffffffffffffffff
-    aws_vpc_security_group_id: sg-fffffffffffffffff
-    aws_availability_zone: us-west-2a
-    private_network_ipmask: 172.30.5.0/24
-
-sakura:
-  default:
-    sakura_local_switch_id: ******
-    sakura_private_subnet_gateway_ip: 172.23.1.1
-    sakura_zone: tk1a
-    private_network_ipmask: 172.23.1.0/24
-
-gcp:
-  default:
-    gcp_project: sample-project
-    gcp_subnetwork: sample-project-priv-nw
-    gcp_region: asia-northeast1
-    gcp_zone: asia-northeast1-c
-    private_network_ipmask: 172.29.2.0/24
-
-# 以下は OpenStack ベースのクラウドに対応した設定の例。設定項目は環境により異なる。
-own-openstack:
-  default:
-    network_uuid: ffffffff
-    tenant_name: mytenant
-    region: RegionOne
-    private_network_ipmask: 10.0.1.0/24
-```
+記載例は、`config/vpn_catalog.yml.sample`参照。  
 
 サポートするクラウドプロバイダの VPN カタログ設定項目は以下のとおりである。  
-項目名は [Terraform Provider](https://registry.terraform.io/browse/providers) におけるリソース定義名を踏襲している。
+項目名は [Tofu Provider](https://search.opentofu.org/providers) におけるリソース定義名を踏襲している。
 
 #### AWS (aws)
 
