@@ -10,26 +10,37 @@
 ## 1. Portable VCコントローラ用のmdx仮想マシンを作成
 
 - mdxの仮想マシンを1個作成する。
-    - mdx仮想マシンテンプレート: `00_Ubuntu-2204-server`
+    - mdx仮想マシンテンプレート: `10_Ubuntu 24.04 LTS (Vendor)`
     - メモリ量: 4GB以上
     - 仮想ディスク容量: 40GB以上
+    - (備考) ユーザ名は`mdx-user01`
 
-- mdxの仮想マシン上で、Portable VCCセットアップ・スクリプトを実行する。
-    - `./mdx/init_mdx_pvcc.sh` を実行する。（sudo権限が必要）
-    - セットアップ・スクリプトにより以下のインストール、設定等が行われる。
-        - Docker CE, Docker Composeインストール
-        - Portable VCCのコンテナイメージ取得、起動
-        - Portable VCCの初期設定
-        - Jupyter Notebookサーバのコンテナイメージ取得、起動
-    - 正常終了すると、VCP REST API アクセストークンが `./tokenrc` ファイルに出力される。
+- 起動したマシンにログインし、以下を実行する
+
+    ```
+    git clone https://github.com/nii-gakunin-cloud/ocs-vcp-portable.git
+    cat <<EOF >config/vpn_catalog.yml
+    cci_version: '1.0'
+    onpremises:
+    default: {}
+    EOF
+    sudo bash init_pvcc.sh ens192
+    ```
+
+    正常終了すると、以下が出力される。
+
+    - `cred/tokenrc` ... VCP REST API アクセストークン
+    - `cred/.jupyter_pass` ... Jupyter初期ログインパスワード
 
 ## 2. VCP SDK初期設定
 
 Portable VCコントローラ用のmdx仮想マシン上に起動したJupyter Notebookで、VCP SDKの初期設定を行う。
 
 - Jupyter Notebookサーバはmdx仮想マシンの `localhost:8888` で起動している。  
-  - mdx仮想マシンに対してSSH Portforwardするか、またはmdxのDNAT+ACL設定により外部からの接続を可能にした上でブラウザからアクセスする。
-  - Jupyter Notebookのログインパスワードは、Portable VCCセットアップ・スクリプト `init_mdx_pvcc.sh` の `JUPYTER_NOTEBOOK_PASSWORD` で指定した値
+  - mdx仮想マシンに対してSSH Portforwardするか、またはmdxのDNAT+ACL設定により外部からの接続を可能にした上でブラウザからアクセスする
+  - `config/nginx.conf`でフォワーディング設定を行い、nginxコンテナを再起動することで設定変更も可能
+  - Jupyter Notebookの初期ログインパスワードは、`cred/.jupyter_pass`に記載  
+    ※ マニュアル（`quickstart.md`）に記載の手順で、任意のパスワードに変更してください。
 
 - `vcp_config/vcp_config.yml` の vcc.host には `127.0.0.1` を記述する。
 
