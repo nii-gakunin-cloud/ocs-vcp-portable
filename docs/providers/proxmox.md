@@ -2,21 +2,20 @@
 
 ## 0. 概要
 
-1. [ネットワーク設定](#ネットワーク設定)
-1. [仮想マシンテンプレート作成](#仮想マシンテンプレート作成)
-1. [qemu-agentを利用するための設定](#qemu-agentを利用するための設定)
-1. [Potable VCコントローラ& Jupyterセットアップ](#PotableVCコントローラJupyterセットアップ)
-1. [VCP SDK初期設定](#VCPSDK初期設定)
-1. [動作確認](#動作確認)
+1. [ネットワーク設定](#nw)
+1. [仮想マシンテンプレート作成](#machine)
+1. [qemu-agentを利用するための設定](#qemu-agent)
+1. [Potable VCコントローラ & Jupyterセットアップ](#vcc-setup)
 
-## 1. ネットワーク設定
+
+## 1. ネットワーク設定 <a id="nw"></a>
 
 VCP用の仮想ネットワークを作成します。  
 既に存在している設定を利用しても構いません。  
 [公式の手順](https://pve.proxmox.com/wiki/Setup_Simple_Zone_With_SNAT_and_DHCP)等を参照し、ネットワーク設定を行ってください。  
 ここで設定した情報のうち、VCPで起動したマシンが利用するNICを後ほど指定します。（`vpn_catalog.yml`）
 
-## 2. 仮想マシンテンプレート作成
+## 2. 仮想マシンテンプレート作成 <a id="machine"></a>
 
 Ubuntu仮想マシンテンプレートを作成します。ここで作成したテンプレートはVCコントローラの他、VCノード構築にも利用します。  
 既にテンプレートが作成済みの場合、スキップしてください。  
@@ -39,7 +38,7 @@ qm set 9000 --serial0 socket --vga serial0
 qm template 9000
 ```
 
-## 3. qemu-agentを利用するための設定  
+## 3. qemu-agentを利用するための設定 <a id="qemu-agent"></a>
 
 VCPにて、マシン起動時に静的IPアドレスを設定しない場合（DHCPを利用してIPアドレスを設定する場合）、起動したマシンのIPアドレスを知るため、qemu-agentを利用します。  
 これは、Proxmoxに予めcloud-init用設定ファイルを配置しておき、マシン起動時に反映させることで都度インストールするよう設定します。  
@@ -59,7 +58,7 @@ runcmd:
 EOF
 ```
 
-## 4. Potable VCコントローラ& Jupyterセットアップ
+## 4. Potable VCコントローラ& Jupyterセットアップ <a id="vcc-setup"></a>
 
 ### 仮想マシン作成
 
@@ -77,4 +76,4 @@ qm set 500 --ipconfig0 ip={{付与するipアドレス}},gw={{デフォルトゲ
 qm start 500
 ```
 
-次に、[クイックスタート](/quickstart.md)に従って、構築作業を進めてください。  
+次に、[クイックスタート](../quickstart.md)に従って、構築作業を進めてください。  

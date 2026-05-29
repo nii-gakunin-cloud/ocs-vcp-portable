@@ -9,8 +9,10 @@
 
 ## 1. Portable VCコントローラ用のmdx仮想マシンを作成
 
-- mdxの仮想マシンを1個作成する。
-    - mdx仮想マシンテンプレート: `10_Ubuntu 24.04 LTS (Vendor)`
+- mdxの仮想マシンを1個作成する。  
+
+    - mdx仮想マシンテンプレート: `10_Ubuntu 24.04 LTS (Vendor)`  
+        ※動作確認済みの公式提供イメージ。以下このイメージを前提とした設定内容を記載している。
     - メモリ量: 4GB以上
     - 仮想ディスク容量: 40GB以上
     - (備考) ユーザ名は`mdx-user01`
@@ -27,10 +29,8 @@
     sudo bash init_pvcc.sh ens192
     ```
 
-    正常終了すると、以下が出力される。
+    正常終了すると、画面上に **jupyterログイン用パスワード**と**初期vccアクセストークン** が表示されるため、控えておく。
 
-    - `cred/tokenrc` ... VCP REST API アクセストークン
-    - `cred/.jupyter_pass` ... Jupyter初期ログインパスワード
 
 ## 2. VCP SDK初期設定
 
@@ -66,30 +66,4 @@ VCPの既存サーバ(SSH)モードを使用するために必要なmdx仮想マ
 ### 動作確認済みのテンプレート
 
 - [CoursewareHub](https://github.com/nii-gakunin-cloud/ocs-templates/tree/master/CoursewareHub) の「構成1」(managerノードにNFSサーバを配置)
-  - [011-VCノード作成-構成1](https://github.com/nii-gakunin-cloud/ocs-templates/tree/master/CoursewareHub/notebooks)
-      - **(注) mdx向けの修正版を使用する必要あり**
-  - 121-CoursewareHubのセットアップ-ローカルユーザ認証
-  - 991-CoursewareHub環境の削除.ipynb
-
-### (参考情報)
-#### CoursewareHubテンプレートのmdx向け修正内容
-
-##### 1. NFS用Baseコンテナイメージの修正
-
-  - [`00-mkfs.sh`](https://github.com/nii-gakunin-cloud/ocs-templates/tree/master/CoursewareHub/docker/bc/nfsd/etc/vcp/rc.d) を削除してイメージを再作成する
-    * ビルド済みイメージの公開場所:  
-      `public.ecr.aws/niivcp/vcp/coursewarehub:bc-nfs-onpremises`
-
-##### 2. [011-VCノード作成-構成1](https://github.com/nii-gakunin-cloud/ocs-templates/tree/master/CoursewareHub/notebooks)
-
-  - NFS サーバ用に外部ディスクは使えないため、masterノードのホスト上の `/mnt` をBaseコンテナに volume マウントする。
-    * Baseコンテナ起動時に `-v /mnt:/exportd` オプションが付く形で masterノード用の VC ノードを起動  
-    `spec_mgr.params_v.append('/mnt:/exported')`
-
-  - spec 指定を onpremises (SSHモード) 用に書き換える。以下が必須項目。
-    * `ip_addresses`
-    * `user_name`
-    * `set_ssh_pubkey()`
-
-  - `docker swarm init` のオプションに `--advertise-addr` を追加する。  
-    (mdx仮想マシンに複数のNICがあるため、対象のNICを明示的に指定)
+- [MCJ-CloudHub](https://github.com/nii-gakunin-cloud/mcj-cloudhub)

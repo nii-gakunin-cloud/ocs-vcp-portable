@@ -1,12 +1,14 @@
 #!/bin/bash
 
 VCP_JUPYTER=vcp-jupyter.sh
-VCP_SDK_VERSION=25.10.0
+VCP_SDK_VERSION=26.10.0
 JUPYTER_NOTEBOOK_PASSWORD=$(cat /dev/urandom | base64 | fold -w 10 | head -n 1)
 DC_CMD="docker compose"
 CONFIG_DIR='config'
 CREDENTIALS_DIR='cred'
 CERTS_DIR='cert'
+CERT_FILE="$CERTS_DIR/occtr_cert.pem"
+VCC_CMD='vcc'
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <Network IF Name>"
@@ -57,16 +59,13 @@ VCP_VCC_PRIVATE_IPMASK=$(ip --oneline --family inet address show dev $LOCAL_NETW
 sed -i '/^VCP_VCC_PRIVATE_IPMASK/d' .env
 echo "VCP_VCC_PRIVATE_IPMASK=$VCP_VCC_PRIVATE_IPMASK" >> .env
 
-vcc_token="$CREDENTIALS_DIR/tokenrc"
-mkdir -p "$CERTS_DIR" "$CREDENTIALS_DIR"
-cp dummy_cert/* "$CERTS_DIR/"
+# Create dummy cert for VCC and Jupyter Notebook
+bash tools/create_dummy_cert.sh "$CERTS_DIR" 3600
+
 sudo ${DC_CMD} up -d nginx occtr
-sudo ${DC_CMD} exec -T occtr ./init.sh
-sudo ${DC_CMD} exec -T occtr ./create_token.sh > "$vcc_token"
+sudo ${DC_CMD} exec -T occtr $VCC_CMD init
 
 # install VCP-Jupyter Notebook (include VCP SDK)
-jupyter_password="$CREDENTIALS_DIR/.jupyter_pass"
-echo "$JUPYTER_NOTEBOOK_PASSWORD" > "$jupyter_password"
 port=8888
 subdir=jupyter
 jupyter_release=20251001-ssl-cc
@@ -84,13 +83,23 @@ do
 done
 
 container_name=cloudop-notebook-$VCP_SDK_VERSION-$subdir-$port
-sudo docker cp "$CERTS_DIR/ca.pem" $container_name:/usr/local/share/ca-certificates/vcp_ca.crt
+sudo docker cp "$CERT_FILE" $container_name:/usr/local/share/ca-certificates/vcp_ca.crt
 sudo docker exec -u root $container_name update-ca-certificates
 
 # output VCP API token
-echo VCP REST API token is in $vcc_token
-echo Jupyter login pass is in $jupyter_password
 
 sudo apt-get -y autoremove
 
 echo "setup was completed."
+
+msg=$(cat <<EOM
+Your Jupyter password is:\n ${JUPYTER_NOTEBOOK_PASSWORD}\n
+Initial vcc access token is:\n  $(sudo ${DC_CMD} exec -T occtr ${VCC_CMD} create_token)\n
+
+Please note it down. This window will close and destroy the text upon pressing OK.
+EOM
+)
+whiptail --title "Initial Passwords" \
+         --msgbox "$msg" 15 60
+
+unset JUPYTER_NOTEBOOK_PASSWORD
