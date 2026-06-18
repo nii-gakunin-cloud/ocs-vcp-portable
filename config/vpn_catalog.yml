@@ -1,0 +1,5 @@
+cci_version: '1.0'
+
+# SSH provisioning
+onpremises:
+  default: {}

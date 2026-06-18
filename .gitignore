@@ -3,3 +3,5 @@ cert
 cred
 site
 .cache
+.env
+jupyter-work
