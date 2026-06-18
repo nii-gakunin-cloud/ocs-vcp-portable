@@ -1,7 +1,5 @@
 #!/bin/bash
 
-VCP_JUPYTER=vcp-jupyter.sh
-# JUPYTER_NOTEBOOK_PASSWORD=$(cat /dev/urandom | base64 | fold -w 10 | head -n 1)
 DC_CMD="docker compose"
 CONFIG_DIR='config'
 CREDENTIALS_DIR='cred'
