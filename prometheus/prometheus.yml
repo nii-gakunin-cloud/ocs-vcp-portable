@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: "monitor"
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: "vcchost"
+    static_configs:
+      - targets: ["cadvisor:8080", "registry:5001"]
+  - job_name: 'basecontainers'
+    file_sd_configs:
+      - files:
+          - '/etc/prometheus/targets.json'
+        refresh_interval: 1m
