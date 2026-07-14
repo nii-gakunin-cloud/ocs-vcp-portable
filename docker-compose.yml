@@ -10,14 +10,16 @@ services:
       - ./volume/opt/occ/.ssh:/opt/occ/.ssh
       - ./volume/opt/occ/vc:/opt/occ/vc
     environment:
-      - VCP_VCC_PRIVATE_IPMASK=${VCP_VCC_PRIVATE_IPMASK:?VCP_VCC_PRIVATE_IPMASK environment variable is required}
+      - VCP_VCC_PRIVATE_IPMASK=${VCP_VCC_PRIVATE_IPMASK:?}
       - VCP_OFFICIAL_REGISTRY_ADDRESS=${VCP_OFFICIAL_REGISTRY_ADDRESS:-harbor.vcloud.nii.ac.jp}
-      - CONSUL_BASE_URL=${CONSUL_BASE_URL:-http://127.0.0.1:8500/v1/} # consul HTTP API
-      - CONSUL_UI_CONTENT_PATH=${CONSUL_UI_CONTENT_PATH:-/consul} # consul agent option
-      - CONSUL_NODE_NAME=${CONSUL_NODE_NAME:-portable_occtr}
+      # - CONSUL_BASE_URL=${CONSUL_BASE_URL:-http://consul:8500/v1/} # consul HTTP API
+      - CONSUL_INITIAL_TOKEN=${CONSUL_INITIAL_TOKEN:?}
+      - CONSUL_HTTP_ADDR=${CONSUL_HTTP_ADDR:-consul:8500}
+      - CONSUL_HTTP_TOKEN_FILE=/opt/occ/var/occtr/consul_token
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
       - MANAGE_VAULT=true
       - VAULT_API_URL=https://vault:8200/v1
+      - REDIS_HOST=redis
   nginx:
     # networks:
     #   - vcp-public
@@ -26,10 +28,9 @@ services:
       - "8080:8080"
     volumes:
        - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    # httpsの場合
-      #  - ./nginx/certs:/etc/nginx/certs:ro
-    # environment:
-      #  - host=<fqdn>
+       - ./nginx/certs:/etc/nginx/certs:ro
+    environment:
+       - PROXY_HOST=${NGINX_PROXY_HOST:?}
   jupyter:
     image: harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:lab-4.5.7-simple
     # networks:
@@ -45,6 +46,7 @@ services:
       - JUPYTER_PORT=8888
       - CHOWN_HOME=yes
       - CHOWN_HOME_OPTS=-R
+      - VAULT_URL=https://vault:8200/v1
     # Full config: https://jupyter-server.readthedocs.io/en/latest/users/configuration.html
     command:
       - start-notebook.py
@@ -86,7 +88,7 @@ services:
       - "7947:7947"
     volumes:
       - ./prometheus/targets.json:/etc/prometheus/targets.json
-      - serf-data:/usr/share/serf/snapshot
+      - serf-data:/usr/share/serf
     command: [
       "agent",
       "-node=${SERF_NODE:-serf}",
@@ -98,29 +100,96 @@ services:
       "-snapshot=/usr/share/serf/snapshot",
       "-tag=role=pvcc"
     ]
-  cadvisor:
-    image: ghcr.io/google/cadvisor:0.60.3
-    privileged: true
-    devices:
-      - /dev/kmsg:/dev/kmsg:ro
+  consul:
+    image: hashicorp/consul:1.16
     volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
+      - ./consul/config/default.json.template:/consul/config/default.json.template:ro
+      - ./consul/vcp-entrypoint.sh:/usr/local/bin/vcp-entrypoint.sh:ro
+      - consul-data:/consul/data
+    entrypoint: ["/bin/sh", "/usr/local/bin/vcp-entrypoint.sh"]
+    command: [
+      "agent",
+      "-bootstrap",
+      "-server",
+      "-datacenter=local",
+      "-ui",
+      "-ui-content-path=/consul",
+      "-node=server.pvcc",
+      "-client=0.0.0.0",
+      "-bind=127.0.0.1",
+      "-advertise=127.0.0.1",
+      "-config-dir=/consul/config",
+      "-data-dir=/consul/data"
+    ]
+    environment:
+      - CONSUL_UI_CONTENT_PATH=${CONSUL_UI_CONTENT_PATH:-/consul}
+      - CONSUL_INITIAL_TOKEN=${CONSUL_INITIAL_TOKEN:?}
+  # cadvisor:
+  #   image: ghcr.io/google/cadvisor:0.60.3
+  #   privileged: true
+  #   devices:
+  #     - /dev/kmsg:/dev/kmsg:ro
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #     - /dev/disk/:/dev/disk:ro
   vault:
     build:
       context: ./vault
     volumes:
       - ./cert:/bao/cert:ro
       - ./vault/data:/bao/data
+  redis:
+    image: redis:8-alpine
+  worker-update:
+    image: harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
+    command: ["/bin/sh", "/entrypoint.sh"]
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PYTHONPATH="/opt/occ"
+      - DJANGO_SETTINGS_MODULE=occ.settings
+      - CONSUL_HTTP_ADDR=${CONSUL_HTTP_ADDR:-consul:8500}
+      - VAULT_API_URL=https://vault:8200/v1
+      - RQ_TARGET_QUEUE_NAME=state_update
+      - REDIS_HOST=redis
+    volumes:
+      - ./cert/occtr_ca.crt:/usr/local/share/ca-certificates/occtr_ca.crt/:ro
+      - ./config:/opt/occ/config:ro
+      - ./volume/opt/occ/var:/opt/occ/var
+      - ./volume/opt/occ/.ssh:/opt/occ/.ssh
+      - ./volume/opt/occ/vc:/opt/occ/vc
+      - ./rq/entrypoint.sh:/entrypoint.sh:ro
+    depends_on:
+      - redis
+  # --scale worker=3 等で起動数を指定する
+  worker:
+    image: harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
+    command: ["/bin/sh", "/entrypoint.sh"]
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PYTHONPATH="/opt/occ"
+      - DJANGO_SETTINGS_MODULE=occ.settings
+      - CONSUL_HTTP_ADDR=${CONSUL_HTTP_ADDR:-consul:8500}
+      - VAULT_API_URL=https://vault:8200/v1
+      - REDIS_HOST=redis
+    volumes:
+      - ./cert/occtr_ca.crt:/usr/local/share/ca-certificates/occtr_ca.crt/:ro
+      - ./config:/opt/occ/config:ro
+      - ./volume/opt/occ/var:/opt/occ/var
+      - ./volume/opt/occ/.ssh:/opt/occ/.ssh
+      - ./volume/opt/occ/vc:/opt/occ/vc
+      - ./rq/entrypoint.sh:/entrypoint.sh:ro
+    depends_on:
+      - redis
 volumes:
   jupyter-data:
   registry-data:
   grafana-data:
   prometheus-data:
   serf-data:
+  consul-data:
 # networks:
 #   vcp-public:
 #     driver: bridge
