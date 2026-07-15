@@ -324,7 +324,7 @@
             "uid": "P40F57689AAD7ABAF"
           },
           "editorMode": "code",
-          "expr": "sum(container_memory_rss{instance=~\".+\",job!='vcchost'}) by (instance)",
+          "expr": "sum(container_memory_rss{instance=~\".+\",id='/',job!='vcchost'}) by (instance)",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1226,9 +1226,9 @@
             "type": "prometheus",
             "uid": "P40F57689AAD7ABAF"
           },
-          "editorMode": "code",
+          "editorMode": "builder",
           "exemplar": false,
-          "expr": "cadvisor_version_info",
+          "expr": "cadvisor_version_info{job!=\"vcchost\"}",
           "format": "table",
           "instant": true,
           "intervalFactor": 2,
