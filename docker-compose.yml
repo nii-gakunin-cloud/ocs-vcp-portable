@@ -36,6 +36,10 @@ services:
        - ./nginx/certs:/etc/nginx/certs:ro
     environment:
        - NGINX_PROXY_HOST=${NGINX_PROXY_HOST:?}
+    depends_on:
+      - jupyter
+      - grafana
+      - consul
   jupyter:
     image: harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:lab-4.5.7-simple
     # networks:

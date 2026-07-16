@@ -12,7 +12,7 @@
     }
 
     upstream consul {
-       server occtr:8500;
+       server consul:8500;
     }
 
     server {

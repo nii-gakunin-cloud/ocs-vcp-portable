@@ -20,4 +20,5 @@ if [ ! -d cert ]; then
 fi
 
 mkdir -p ./vault/data
+chown 1000:1000 ./vault/data
 # docker compose up -d --scale worker=3
