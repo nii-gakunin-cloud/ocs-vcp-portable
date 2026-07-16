@@ -20,6 +20,7 @@ services:
       - MANAGE_VAULT=true
       - VAULT_API_URL=https://vault:8200/v1
       - REDIS_HOST=redis
+      - BC_REGISTRY_HOST=${BC_REGISTRY_HOST:-harbor.vcloud.nii.ac.jp}
     depends_on:
       - serf
       - vault
@@ -63,6 +64,7 @@ services:
       - "5000:5000"
     environment:
       - REGISTRY_PROXY_REMOTEURL=https://harbor.vcloud.nii.ac.jp
+      - REGISTRY_LOG_LEVEL=info
     volumes:
       - registry-data:/var/lib/registry
   grafana:
@@ -149,7 +151,7 @@ services:
     image: redis:8-alpine
   worker-update:
     image: harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
-    command: ["/bin/sh", "/entrypoint.sh"]
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
     environment:
       - REDIS_URL=redis://redis:6379
       - PYTHONPATH="/opt/occ"
@@ -170,7 +172,7 @@ services:
   # --scale worker=3 等で起動数を指定する
   worker:
     image: harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
-    command: ["/bin/sh", "/entrypoint.sh"]
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
     environment:
       - REDIS_URL=redis://redis:6379
       - PYTHONPATH="/opt/occ"
