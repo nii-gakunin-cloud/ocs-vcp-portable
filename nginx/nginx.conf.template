@@ -4,7 +4,7 @@
     }
 
     upstream grafana {
-       server localhost:3000;
+       server grafana:3000;
     }
 
     upstream jupyter {
