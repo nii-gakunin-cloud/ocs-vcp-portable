@@ -11,16 +11,13 @@ services:
       - ./volume/opt/occ/vc:/opt/occ/vc
     environment:
       - VCP_VCC_PRIVATE_IPMASK=${VCP_VCC_PRIVATE_IPMASK:?}
-      - VCP_OFFICIAL_REGISTRY_ADDRESS=${VCP_OFFICIAL_REGISTRY_ADDRESS:-harbor.vcloud.nii.ac.jp}
-      # - CONSUL_BASE_URL=${CONSUL_BASE_URL:-http://consul:8500/v1/} # consul HTTP API
       - CONSUL_INITIAL_TOKEN=${CONSUL_INITIAL_TOKEN:?}
-      - CONSUL_HTTP_ADDR=${CONSUL_HTTP_ADDR:-consul:8500}
-      - CONSUL_HTTP_TOKEN_FILE=/opt/occ/var/occtr/consul_token
-      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
       - MANAGE_VAULT=true
-      - VAULT_API_URL=https://vault:8200/v1
       - REDIS_HOST=redis
-      - BC_REGISTRY_HOST=${BC_REGISTRY_HOST:-harbor.vcloud.nii.ac.jp}
+      - VAULT_API_URL=https://vault:8200/v1
+      - CONSUL_HTTP_ADDR=consul:8500
+      - CONSUL_HTTP_TOKEN_FILE=/opt/occ/var/occtr/consul_token
+    command: ["server"]
     depends_on:
       - serf
       - vault
@@ -47,7 +44,8 @@ services:
     user: root
     volumes:
       - ./cert/occtr_ca.crt:/usr/local/share/ca-certificates/occtr_ca.crt:ro
-      - ./jupyter-work:/home/jovyan/work
+      - ./volume/jupyter/work:/home/jovyan/work
+      - ./volume/jupyter/.ssh:/home/jovyan/.ssh
       - jupyter-data:/home/jovyan/.jupyter
     environment:
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
@@ -56,6 +54,7 @@ services:
       - CHOWN_HOME=yes
       - CHOWN_HOME_OPTS=-R
       - VAULT_URL=https://vault:8200/v1
+      - VCPSDK_CONFIG_DIR=/home/jovyan/work/setup
     # Full config: https://jupyter-server.readthedocs.io/en/latest/users/configuration.html
     command:
       - start-notebook.py
@@ -155,42 +154,41 @@ services:
     image: redis:8-alpine
   worker-update:
     image: harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
-    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    command: ["rq", "worker", "--path", "/opt/occ",
+              "--url", "redis://redis:6379",
+              "--date-format='%Y-%m-%d %H:%M:%S'",
+              "state_update"
+              ]
     environment:
-      - REDIS_URL=redis://redis:6379
-      - PYTHONPATH="/opt/occ"
-      - DJANGO_SETTINGS_MODULE=occ.settings
-      - CONSUL_HTTP_ADDR=${CONSUL_HTTP_ADDR:-consul:8500}
+      - PYTHONPATH=/opt/occ
+      - CONSUL_KVS_URL=http://consul:8500/v1/kv
       - VAULT_API_URL=https://vault:8200/v1
-      - RQ_TARGET_QUEUE_NAME=state_update
-      - REDIS_HOST=redis
     volumes:
-      - ./cert/occtr_ca.crt:/usr/local/share/ca-certificates/occtr_ca.crt/:ro
+      - ./cert:/opt/occ/httpd/cert/:ro
       - ./config:/opt/occ/config:ro
       - ./volume/opt/occ/var:/opt/occ/var
       - ./volume/opt/occ/.ssh:/opt/occ/.ssh
       - ./volume/opt/occ/vc:/opt/occ/vc
-      - ./rq/entrypoint.sh:/entrypoint.sh:ro
     depends_on:
       - redis
   # --scale worker=3 等で起動数を指定する
   worker:
     image: harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
-    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    command: ["rq", "worker", "--path", "/opt/occ",
+              "--url", "redis://redis:6379",
+              "--date-format='%Y-%m-%d %H:%M:%S'",
+              "default"
+              ]
     environment:
-      - REDIS_URL=redis://redis:6379
-      - PYTHONPATH="/opt/occ"
-      - DJANGO_SETTINGS_MODULE=occ.settings
-      - CONSUL_HTTP_ADDR=${CONSUL_HTTP_ADDR:-consul:8500}
+      - PYTHONPATH=/opt/occ
+      - CONSUL_KVS_URL=http://consul:8500/v1/kv
       - VAULT_API_URL=https://vault:8200/v1
-      - REDIS_HOST=redis
     volumes:
-      - ./cert/occtr_ca.crt:/usr/local/share/ca-certificates/occtr_ca.crt/:ro
+      - ./cert:/opt/occ/httpd/cert/:ro
       - ./config:/opt/occ/config:ro
       - ./volume/opt/occ/var:/opt/occ/var
       - ./volume/opt/occ/.ssh:/opt/occ/.ssh
       - ./volume/opt/occ/vc:/opt/occ/vc
-      - ./rq/entrypoint.sh:/entrypoint.sh:ro
     depends_on:
       - redis
 volumes:
