@@ -1,6 +1,6 @@
 services:
   occtr:
-    image: harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
+    image: ${OCCTR_IMAGE}
     # networks:
     #   - vcp-internal
     volumes:
@@ -153,7 +153,7 @@ services:
   redis:
     image: redis:8-alpine
   worker-update:
-    image: harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
+    image: ${OCCTR_IMAGE}
     command: ["rq", "worker", "--path", "/opt/occ",
               "--url", "redis://redis:6379",
               "--date-format='%Y-%m-%d %H:%M:%S'",
@@ -173,7 +173,7 @@ services:
       - redis
   # --scale worker=3 等で起動数を指定する
   worker:
-    image: harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
+    image: ${OCCTR_IMAGE}
     command: ["rq", "worker", "--path", "/opt/occ",
               "--url", "redis://redis:6379",
               "--date-format='%Y-%m-%d %H:%M:%S'",
