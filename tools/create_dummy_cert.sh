@@ -1,11 +1,20 @@
 #!/bin/bash
+set -euo pipefail
 
 cert_dir=${1:-cert}
 retension_days=${2:-30}
 mkdir -p "$cert_dir"
 cd "$cert_dir"
 
-cat <<EOF > /tmp/ca.cnf
+tmpdir=$(mktemp -d)
+cleanup() {
+    echo 'Cleanup tmp'
+    rm -rf "$tmpdir"
+    echo 'Cleanup complete'
+}
+trap cleanup EXIT
+
+cat <<EOF > "$tmpdir/ca.cnf"
 [ req ]
 distinguished_name = req_distinguished_name
 x509_extensions = v3_ca
@@ -18,7 +27,7 @@ basicConstraints = critical, CA:TRUE
 keyUsage = critical, digitalSignature, cRLSign, keyCertSign
 EOF
 
-cat <<EOF > /tmp/req.cnf
+cat <<EOF > "$tmpdir/req.cnf"
 [req]
 distinguished_name = req_distinguished_name
 x509_extensions = v3_req
@@ -41,7 +50,7 @@ IP.1 = 127.0.0.1
 EOF
 
 openssl req -x509 -nodes -days "$retension_days" -newkey rsa:2048 \
-  -config /tmp/ca.cnf \
+  -config "$tmpdir/ca.cnf" \
   -keyout occtr_ca.key \
   -out occtr_ca.crt \
   -subj "/CN=MyPrivateCA"
@@ -56,10 +65,9 @@ openssl x509 -req -days "$retension_days" \
   -CA occtr_ca.crt \
   -CAkey occtr_ca.key \
   -CAcreateserial \
-  -extfile /tmp/req.cnf \
+  -extfile "$tmpdir/req.cnf" \
   -extensions v3_req \
   -out occtr.crt
 
-rm /tmp/req.cnf
 openssl verify -CAfile occtr_ca.crt occtr.crt
 openssl x509 -in occtr.crt -text -noout | grep -A 1 "Subject Alternative Name"

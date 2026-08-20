@@ -13,37 +13,76 @@ VCP ポータブル版のご利用にあたり、ユーザ登録をお願いし�
 
 - [ユーザ登録フォーム](https://reg.nii.ac.jp/m/ocs_user_registration)
 
+## 構成
+
+![](./images/architecture.drawio.png)
+
 ## クイックスタート
 
-```
-sudo bash init_pvcc.sh <Network IF Name>
-```
+> [!NOTE]
+> Ubuntu環境が前提となっている。
 
-セットアップ・スクリプトにより以下のインストール、設定等が行われます。  
+- 設定ファイル等セットアップ  
 
-- Docker CE, Docker Composeインストール
-- VCコントローラのコンテナイメージ取得、起動
-- Jupyter Notebookサーバのコンテナイメージ取得、起動
+    内部で使用する証明書等の作成や環境変数の設定を行います。  
 
-Jupyter Notebookサーバのログイン用初期トークンを確認します。
+    ```
+    sudo bash init.sh
+    ```
 
-```
-docker compose logs jupyter | grep token
-```
+    作成された `.env` の内容が正しいことを確認してください。  
+    `NGINX_PROXY_HOST`は手動での設定が必須です。外部公開用ホスト名を設定してください。  
+    なお、デフォルトの設定では、このNginxでTLS終端を行う設定となっているため、`localhost`等で検証を行う場合は、`./nginx/nginx.conf.template` の内容を変更してください。  
 
-`http://<ip addr>:8888/jupyter` にアクセスし、確認した初期トークンでログインしてください。
+    ex.
 
-## 通常版（VCP サービス版）とVCP ポータブル版 の比較
+    ```
+    - listen 8080 ssl;
+    + listen 8080;
+    server_name ${NGINX_PROXY_HOST};
+    - ssl_certificate      /etc/nginx/certs/fullchain.pem;
+    - ssl_certificate_key  /etc/nginx/certs/privkey.pem;
+    ```
 
-### A. 通常利用ケースでの構成
+    (項目一覧: occtrのドキュメント参照)  
 
-- 利用機関・クラウドプロバイダ間の接続に加え、SINET関連施設に設置している本サービスのコントローラとの接続が必要です。
-- SINET接続もしくはインターネット接続が利用できます。
-- 本サービスのクライアントソフトウェアからSINET関連施設に設置されている本サービスのコントローラとクラウドプロバイダ上の資源やサービスを制御し、アプリケーション実行環境を構築します。
+- コンテナ起動  
 
-![](./images/ocs-figure_01.png)
+    コンテナ一式を起動します。`worker`（VCコントローラ用ジョブキュー）の数は環境に合わせて設定してください。  
 
-### B-1. VCP ポータブル版 / 利用機関側にコントローラを配置
+    ```
+    docker compose up -d --scale worker=3
+    ```
+
+- コンテナ数確認  
+
+    ```
+    $ docker compose ps | wc -l
+    15
+    ``` 
+
+- VCコントローラ用アクセストークン発行  
+
+    VCコントローラ(occtrコンテナ)が稼働するマシン上で以下を実行し、VCコントローラ用アクセストークンを発行します。  
+
+    ```
+    docker compose exec occtr vcc token create
+    ```
+
+- Jupyterアクセス（ブラウザ）  
+
+    Jupyter Notebookサーバのログイン用初期トークンを確認します。
+
+    ```
+    docker compose logs jupyter | grep token
+    ```
+
+    `https://<host>:8080/jupyter` にアクセスし、確認した初期トークンでログインしてください。  
+    `~/work/setup/credential_setup.ipynb` を開き、VCコントローラ用アクセストークンの入力とvcpsdkクライアントの初期化を行い、VCコントローラが利用できることを確認してください。  
+
+## VCコントローラ配置例
+
+### 1. VCP ポータブル版 / 利用機関側にコントローラを配置
 
 - SINET関連施設にあるコントローラを使用せず、利用機関側にポータブル版のコントローラを配置します。
 - 利用機関・クラウドプロバイダ間の接続に SINET関連施設は介入しません。
@@ -51,7 +90,7 @@ docker compose logs jupyter | grep token
 
 ![](./images/ocs-figure_02.png)
 
-### B-2. VCP ポータブル版 / クラウドにコントローラを配置
+### 2. VCP ポータブル版 / クラウドにコントローラを配置
 
 - SINET関連施設にあるコントローラを使用せず、クラウドの仮想セグメントにポータブル版のコントローラを配置します。
 - 利用機関・クラウドプロバイダ間の接続に SINET関連施設は介入しません。
@@ -59,9 +98,12 @@ docker compose logs jupyter | grep token
 
 ![](./images/ocs-figure_03.png)
 
-### B-3. VCP ポータブル版 / すべてクラウド側に配置
+### 3. VCP ポータブル版 / すべてクラウド側に配置
 
 - ポータブル版のコントローラ、クライアントの両方をクラウドの仮想セグメントにポータブル版のコントローラを配置します。
 - アプリケーション環境をクラウドの仮想セグメントに閉じた構成で構築することができます。
 
 ![](./images/ocs-figure_04.png)
+
+> [!NOTE]
+> 「ポータブル版」（セルフホスト型）に対して、サービス版（提供版）VCコントローラは2026年に廃止。
