@@ -21,6 +21,7 @@ VCP ポータブル版のご利用にあたり、ユーザ登録をお願いし�
 
 > [!NOTE]
 > Ubuntu環境が前提となっている。
+> 動作確認済みバージョン: Ubuntu 22.04 LTS, Ubuntu 24.04 LTS
 
 - 設定ファイル等セットアップ  
 
@@ -32,9 +33,9 @@ VCP ポータブル版のご利用にあたり、ユーザ登録をお願いし�
 
     作成された `.env` の内容が正しいことを確認してください。  
     `NGINX_PROXY_HOST`は手動での設定が必須です。外部公開用ホスト名を設定してください。  
-    なお、デフォルトの設定では、このNginxでTLS終端を行う設定となっているため、`localhost`等で検証を行う場合は、`./nginx/nginx.conf.template` の内容を変更してください。  
+    デフォルトの設定では、このNginxでTLS終端を行う設定となっているため、`localhost`等で検証を行う場合は、`./nginx/nginx.conf.template` の内容を変更してください。  
 
-    ex.
+    ex. localhostでの検証向け設定例
 
     ```
     - listen 8080 ssl;
@@ -79,6 +80,32 @@ VCP ポータブル版のご利用にあたり、ユーザ登録をお願いし�
 
     `https://<host>:8080/jupyter` にアクセスし、確認した初期トークンでログインしてください。  
     `~/work/setup/credential_setup.ipynb` を開き、VCコントローラ用アクセストークンの入力とvcpsdkクライアントの初期化を行い、VCコントローラが利用できることを確認してください。  
+
+## リセット
+
+構築済み環境を削除するには、コンテナの停止・Docker volumeの削除と、ホスト側にマウントされたファイルの削除を行います。
+
+コンテナ・Docker volumeの削除  
+
+```
+docker compose down -v
+```
+　
+マウントされたファイルの削除  
+
+```
+sudo rm -rf volume vault/data cert
+```
+
+
+## VCコントローライメージ変更
+
+```
+docker compose down -v occtr worker worker-update
+```
+```
+docker compose up -d --scale worker=<ワーカー数>
+```
 
 ## VCコントローラ配置例
 
