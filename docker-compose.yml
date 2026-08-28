@@ -1,6 +1,7 @@
 services:
   occtr:
     image: ${OCCTR_IMAGE}
+    restart: unless-stopped
     # networks:
     #   - vcp-internal
     volumes:
@@ -26,6 +27,7 @@ services:
     # networks:
     #   - vcp-public
     image: nginx
+    restart: unless-stopped
     ports:
       - "8080:8080"
     volumes:
@@ -39,6 +41,7 @@ services:
       - consul
   jupyter:
     image: harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:lab-4.5.7-simple
+    restart: unless-stopped
     # networks:
     #   - vcp-internal
     user: root
@@ -61,6 +64,7 @@ services:
       - --ServerApp.base_url=/jupyter/
   registry:
     image: registry:3
+    restart: unless-stopped
     # networks:
     #   - vcp-internal
     ports:
@@ -72,6 +76,7 @@ services:
       - registry-data:/var/lib/registry
   grafana:
     image: grafana/grafana:12.2.0
+    restart: unless-stopped
     # networks:
     #   - monitoring
     volumes:
@@ -84,6 +89,7 @@ services:
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/
   prometheus:
     image: prom/prometheus:v2.49.0
+    restart: unless-stopped
     # networks:
     #   - monitoring
     volumes:
@@ -93,6 +99,7 @@ services:
   serf:
     build:
       context: ./serf
+    restart: unless-stopped
     ports:
       - "7947:7947"
     volumes:
@@ -111,6 +118,7 @@ services:
     ]
   consul:
     image: hashicorp/consul:1.16
+    restart: unless-stopped
     volumes:
       - ./consul/config/default.json.template:/consul/config/default.json.template:ro
       - ./consul/vcp-entrypoint.sh:/usr/local/bin/vcp-entrypoint.sh:ro
@@ -145,6 +153,7 @@ services:
   #     - /var/lib/docker/:/var/lib/docker:ro
   #     - /dev/disk/:/dev/disk:ro
   vault:
+    restart: unless-stopped
     build:
       context: ./vault
     volumes:
@@ -153,6 +162,7 @@ services:
   redis:
     image: redis:8-alpine
   worker-update:
+    restart: unless-stopped
     image: ${OCCTR_IMAGE}
     command: ["rq", "worker", "--path", "/opt/occ",
               "--url", "redis://redis:6379",
@@ -173,6 +183,7 @@ services:
       - redis
   # --scale worker=3 等で起動数を指定する
   worker:
+    restart: unless-stopped
     image: ${OCCTR_IMAGE}
     command: ["rq", "worker", "--path", "/opt/occ",
               "--url", "redis://redis:6379",
