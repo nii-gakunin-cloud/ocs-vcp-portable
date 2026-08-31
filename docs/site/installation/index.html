@@ -1,0 +1,1566 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="./..">
+      
+      
+        <link rel="next" href="../manipulation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.57">
+    
+    
+      
+        <title>インストール - VC Controller</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="./.." title="VC Controller" class="md-header__button md-logo" aria-label="VC Controller" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            VC Controller
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              インストール
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="VC Controller" class="md-nav__button md-logo" aria-label="VC Controller" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
+
+    </a>
+    VC Controller
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ocsdocs_index/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  ocsdocsの表示（仮）
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  概要
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  インストール
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  インストール
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        要件
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="要件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#os-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        動作確認済みの OS, Distribution 環境
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        必須ソフトウェア
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ディスク容量要件
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ネットワーク要件
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        準備
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="準備">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        環境変数の設定
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssl" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        SSL証明書
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        クラウド仮想ネットワーク定義ファイル
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vc" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        VCコントローラとクラウド仮想ネットワーク間の通信設定
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        AWS側設定
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        VC コントローラ側設定
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        起動手順
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="起動手順">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vc_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        VCコントローラの起動
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        サービス一覧
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#web-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Web UI
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Web UI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafana" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Grafana
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../manipulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  管理操作
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  リファレンス
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  リファレンス
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/cli_commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  vcc コマンド一覧
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/vpncatalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  VPNカタログ
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/api.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  VCC REST API
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  プロバイダ情報
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  プロバイダ情報
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references/providers/proxmox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Proxmox
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        要件
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="要件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#os-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        動作確認済みの OS, Distribution 環境
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        必須ソフトウェア
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ディスク容量要件
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ネットワーク要件
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        準備
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="準備">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        環境変数の設定
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssl" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        SSL証明書
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        クラウド仮想ネットワーク定義ファイル
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vc" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        VCコントローラとクラウド仮想ネットワーク間の通信設定
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        AWS側設定
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        VC コントローラ側設定
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        起動手順
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="起動手順">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vc_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        VCコントローラの起動
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        サービス一覧
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#web-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Web UI
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Web UI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafana" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Grafana
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+<h1 id="_1">インストール<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">要件<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="os-distribution">動作確認済みの OS, Distribution 環境<a class="headerlink" href="#os-distribution" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Ubuntu Server 22.04 LTS</li>
+<li>Ubuntu Server 24.04 LTS</li>
+</ul>
+<h3 id="_3">必須ソフトウェア<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>VCコントローラの実行環境に以下のソフトウェアがインストールされていることを前提とする。</p>
+<ul>
+<li>Docker</li>
+<li>Docker Compose</li>
+</ul>
+<h3 id="_4">ディスク容量要件<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>10 Gbyte 以上を推奨する。</p>
+<ul>
+<li>Docker コンテナイメージ: 約 6GB<ul>
+<li>ポータブルVCコントローラ/worker/worker-update: 約 2GB</li>
+<li>JupyterNotebook: 約 2GB</li>
+<li>他: 計約 2GB</li>
+</ul>
+</li>
+<li>Docker コンテナボリューム等(最低): 約 1GB</li>
+</ul>
+<h3 id="_5">ネットワーク要件<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>対象とするクラウドの仮想ネットワーク環境上に起動するクラウドインスタンスに対して、ポータブルVCコントローラがプライベートIPアドレスでアクセスできること。</p>
+<ul>
+<li>例<ol>
+<li>VCコントローラとクラウド仮想ネットワーク環境をVPN接続する</li>
+<li>VCコントローラとクラウド仮想ネットワーク環境を同一ネットワーク上に配置する</li>
+</ol>
+</li>
+</ul>
+<h2 id="_6">準備<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h3 id="_7">環境変数の設定<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>VCコントローラ起動時の環境変数設定として、 <code>.env</code> ファイルや <code>docker-compose.yml</code> ファイル等にて、以下の環境変数を設定する。  </p>
+<table>
+<thead>
+<tr>
+<th>必須</th>
+<th>項目名</th>
+<th>意味</th>
+<th>デフォルト値</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>✓</td>
+<td>VCP_VCC_PRIVATE_IPMASK</td>
+<td>クラウドインスタンスと接続可能なVCコントローラ プライベートIPアドレス (例: <code>10.0.2.15/24</code>)</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td>✓</td>
+<td>GF_SECURITY_ADMIN_PASSWORD</td>
+<td>Grafanaの管理者パスワード</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td>✓</td>
+<td>SERF_ADVERTISE</td>
+<td>Serfのadvertise addr</td>
+<td>-</td>
+<td>基本的に、vccが起動するマシンのIPアドレスを指定する</td>
+</tr>
+<tr>
+<td>✓</td>
+<td>NGINX_PROXY_HOST</td>
+<td>ユーザがアクセスする際に指定するFQDN</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td>✓</td>
+<td>CONSUL_INITIAL_TOKEN</td>
+<td>Consulの管理者用トークン(UUID)</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>CONSUL_TOKEN_FILE</td>
+<td>VCCがconsul kvsを利用するためのトークンファイルパス</td>
+<td><code>/opc/occ/var/occtr/consul_token</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>CONSUL_TOKEN</td>
+<td>VCCがconsul kvsを利用するためのトークン</td>
+<td></td>
+<td>指定した場合、<code>CONSUL_TOKEN_FILE</code> より優先される</td>
+</tr>
+<tr>
+<td></td>
+<td>CONSUL_HTTP_ADDR</td>
+<td>Consulのアドレス</td>
+<td><code>localhost:8500</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>CONSUL_KVS_URL</td>
+<td>Consul kvs のURL</td>
+<td><code>http://{CONSUL_HTTP_ADDR}/v1/kv</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>BC_REGISTRY_HOST</td>
+<td>コンテナレジストリホスト</td>
+<td><code>harbor.vcloud.nii.ac.jp</code></td>
+<td>ポートは固定で<code>5000</code>を使用</td>
+</tr>
+<tr>
+<td></td>
+<td>REQUESTS_CA_BUNDLE</td>
+<td>SSL証明書のパス</td>
+<td><code>/etc/ssl/certs/ca-certificates.crt</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>VAULT_API_URL</td>
+<td>VaultAPIアクセス用URL</td>
+<td><code>https://localhost:8200/v1</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>REDIS_HOST</td>
+<td>redisアクセス用ホスト指定</td>
+<td><code>localhost</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>REDIS_PORT</td>
+<td>redisアクセス用ポート指定</td>
+<td><code>6379</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>REDIS_PASSWORD</td>
+<td>redisアクセス用パスワード指定</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="ssl">SSL証明書<a class="headerlink" href="#ssl" title="Permanent link">&para;</a></h3>
+<p>jupyter環境からポータブルVCコントローラ・vaultに対してHTTPS通信を行うため、SSL証明書を準備する必要がある。証明書は、<code>cert/</code> ディレクトリに配置する。</p>
+<ul>
+<li>SSLサーバ証明書<ul>
+<li>Subject Alternative Name:  <code>localhost</code>, <code>127.0.0.1</code>, <code>occtr</code> を設定</li>
+<li>ファイル: <code>occtr.crt</code>, <code>occtr.key</code></li>
+</ul>
+</li>
+<li>上記SSLサーバ証明書を発行したCA認証局の自己署名証明書<ul>
+<li>ファイル: <code>occtr_ca.crt</code></li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>tools/create_dummy_cert.sh</code> スクリプトを使用して、自己署名証明書を作成することができる。スクリプト実行後、<code>cert/</code> ディレクトリに <code>occtr_ca.crt</code>, <code>occtr.crt</code>, <code>occtr.key</code> の3つのファイルが生成される。</p>
+</div>
+<h3 id="_8">クラウド仮想ネットワーク定義ファイル<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>利用するクラウドのリージョンや仮想プライベートネットワークに関する情報をVCコントローラに登録・参照するための機能がある。これを「クラウドVPNカタログ」と呼ぶ。  </p>
+<p>クラウドVPNカタログでは、クラウドプロバイダ毎に複数の仮想プライベートネットワークを定義することができ、ポータブルVCコントローラでは YAML 形式で記述されたファイルを <code>config/vpn_catalog.yml</code> に配置する。  </p>
+<p>クラウドVPNカタログの例を以下に示す。  </p>
+<details class="info">
+<summary>クラウドVPNカタログ記述例</summary>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">cci_version</span><span class="p">:</span><span class="w"> </span><span class="s">'1.0'</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">aws</span><span class="p">:</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nt">default</span><span class="p">:</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ap-northeast-1</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">aws_vpc_subnet_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subnet-fffffffffffffffff</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nt">aws_vpc_security_group_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sg-fffffffffffffffff</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">aws_availability_zone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ap-northeast-1a</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nt">private_network_ipmask</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.2.0/24</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nt">tokyo_subnet1</span><span class="p">:</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ap-northeast-1</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="nt">aws_vpc_subnet_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subnet-fffffffffffffffff</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span><span class="nt">aws_vpc_security_group_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sg-fffffffffffffffff</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">    </span><span class="nt">aws_availability_zone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ap-northeast-1c</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="nt">private_network_ipmask</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.3.0/24</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="nt">us_west_subnet</span><span class="p">:</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">    </span><span class="nt">aws_region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-west-2</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="nt">aws_vpc_subnet_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subnet-fffffffffffffffff</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span><span class="nt">aws_vpc_security_group_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sg-fffffffffffffffff</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">    </span><span class="nt">aws_availability_zone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-west-2a</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="nt">private_network_ipmask</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.5.0/24</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="nt">sakura</span><span class="p">:</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="nt">default</span><span class="p">:</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">    </span><span class="nt">sakura_local_switch_id</span><span class="p">:</span><span class="w"> </span><span class="err">******</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">    </span><span class="nt">sakura_private_subnet_gateway_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.1.1</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">    </span><span class="nt">sakura_zone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tk1a</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">    </span><span class="nt">private_network_ipmask</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.1.0/24</span>
+</span></code></pre></div>
+</details>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>クラウドVPNカタログの項目名や内容は、クラウドプロバイダ毎に異なる。詳細は <a href="../references/vpncatalog/">VPNカタログ</a> 参照。</p>
+</div>
+<h3 id="vc">VCコントローラとクラウド仮想ネットワーク間の通信設定<a class="headerlink" href="#vc" title="Permanent link">&para;</a></h3>
+<p>VCコントローラから、VCノードとして起動したインスタンスに対してプライベートIPアドレスでアクセス可能となるよう、ネットワーク設定を行う。<br />
+例えば、クラウド仮想ネットワークとVCコントローラ間をVPN接続するために IPsec 接続環境を準備する。 </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>VCコントローラから、VCノードとして起動したインスタンスに対してプライベートIPアドレスでアクセス可能とすることが目的である。<br />
+したがって、VCコントローラとVCノードが同一ネットワーク上に配置されている場合は、IPsec 接続は不要である。  </p>
+</div>
+<details class="info">
+<summary>AWS サイト間 VPN (Site-to-Site VPN) 接続の機能を利用した IPsec 接続環境の構築例</summary>
+<h3 id="aws">AWS側設定<a class="headerlink" href="#aws" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Terraform スクリプト <code>aws/aws_vpn.tf</code> を実行する  </p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a># Docker による実行例
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>docker run -ti -v "$(pwd):/app" -w /app hashicorp/terraform init
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>docker run -ti -v "$(pwd):/app" -w /app \
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>-e AWS_ACCESS_KEY_ID="anaccesskey" \
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>-e AWS_SECRET_ACCESS_KEY="asecretkey" \
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>-e AWS_DEFAULT_REGION="ap-northeast-1" \
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>hashicorp/terraform apply
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>var.local_subnet
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>Enter a value:   (VCコントローラ環境のサブネットを入力 例: 10.0.2.0/24)
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>var.my_public_ip
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>Enter a value:   (VCコントローラ環境のOutbound Public IPアドレスを入力)
+</span></code></pre></div>
+</li>
+<li>
+<p>スクリプト実行結果として、AWS VPC に作成されたリソース情報を確認する。  </p>
+<p>この内容を前述の「クラウド仮想ネットワーク定義ファイル」<code>config/vpn_catalog.yml</code> に記述する。  </p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Outputs:
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>aws_availability_zone = ap-northeast-1a
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>aws_vpc_security_group_id = sg-0387934d3cd06946f
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>aws_vpc_subnet_id = subnet-0862300dba34162ed
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>private_network_ipmask = 172.30.2.0/24
+</span></code></pre></div>
+</li>
+<li>
+<p>AWS VPC Dashboard の Site-to-Site VPN Connections から、IPsec 設定ファイルを取得する。  </p>
+<ul>
+<li>AWS VPC Dashboard &gt; Site-to-Site VPN Connections &gt; Download Configuration</li>
+<li>Vendor: Openswan を選択し、設定ファイルをダウンロードする</li>
+</ul>
+</li>
+</ol>
+<h3 id="vc_1">VC コントローラ側設定<a class="headerlink" href="#vc_1" title="Permanent link">&para;</a></h3>
+<p>VCコントローラ側の IPsec 接続環境の例として、ここでは VirtualBox 上の VM (Debian 10) にLibreswan をインストールして設定する手順について説明する。  </p>
+<ol>
+<li>
+<p>Libreswan パッケージをインストールする</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a># apt-get install libreswan
+</span></code></pre></div>
+</li>
+<li>
+<p>Libreswan を初期化する</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a># ipsec initnss
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a># certutil -N --empty-password -d sql:/etc/ipsec.d
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a># modprobe af_key
+</span></code></pre></div>
+</li>
+<li>
+<p><code>ipsec.conf</code> ファイルを作成する  </p>
+<ul>
+<li>AWS VPC Dashboard の Site-to-Site VPN Connections から取得した設定ファイルの内容を編集して利用することが可能</li>
+<li>(注) <code>auth=esp</code> 指定は削除すること</li>
+</ul>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1"><code>/etc/ipsec.conf</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>conn tunnel1
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    authby=secret
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    auto=start
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    left=%defaultroute
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    leftid=@tunnel1
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    leftsubnets=10.0.2.0/24 # ポータブル VC コントローラ設置環境の Private Subnet
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    leftsourceip=10.0.2.15 # ポータブル VC コントローラ設置環境の Private IP
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    right=203.0.113.1 # クラウド側 IPsec インスタンスの Public IP
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    rightsubnet=172.30.0.0/16 # クラウドインスタンスの VPC Subnet
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>    type=tunnel
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    ikelifetime=8h
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    keylife=1h
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>    phase2alg=aes128-sha1;modp1024
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>    ike=aes128-sha1;modp1024
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>    keyingtries=%forever
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>    keyexchange=ike
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>    dpddelay=10
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>    dpdtimeout=30
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>    dpdaction=restart_by_peer
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>ipsec.secrets</code> ファイルを作成する  </p>
+<p>AWS VPC Dashboard の Site-to-Site VPN Connections から取得した設定ファイルに記載された内容をコピーして利用可能。</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1"><code>/etc/ipsec.d/tunnel1.secrets</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a># VCコントローラ環境の Outbound Public IP, クラウド側 IPsec の IP, 事前共有鍵を書く
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>x.x.x.x 203.0.113.1: PSK "XXXXXX"
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>IPsec を起動する  </p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a># ipsec pluto --logfile /var/log/ipsec.log --use-netkey --uniqueids
+</span></code></pre></div>
+</li>
+<li>
+<p>IPsec の接続確立を確認する</p>
+<ul>
+<li>
+<p><code>ipsec status</code> コマンドを実行し、以下の出力があること  </p>
+<blockquote>
+<p><code>Total IPsec connections: loaded 1, active 1</code>
+ <code>IPsec SA established</code></p>
+</blockquote>
+</li>
+<li>
+<p>AWS VPC Dashboard &gt; Site-to-Site VPN Connections &gt; Tunnel Details<br />
+    Tunnel 1 の Status が <strong>UP</strong> であること</p>
+</li>
+</ul>
+</li>
+</ol>
+</details>
+<h2 id="_9">起動手順<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<h3 id="vc_2">VCコントローラの起動<a class="headerlink" href="#vc_2" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>準備<br />
+    以下の各設定等が完了していること。  </p>
+<ul>
+<li>環境変数設定 (<code>.env</code>)</li>
+<li>クラウド仮想ネットワーク定義ファイル (<code>config/vpn_catalog.yml</code>)</li>
+<li>X509 形式 SSL 証明書 (<code>certs</code>)</li>
+<li><code>occtr.crt</code> (Private CA 利用時), <code>occtr.crt</code>, <code>occtr.key</code></li>
+<li>VCコントローラとクラウド仮想ネットワーク間の通信設定</li>
+</ul>
+</li>
+<li>
+<p>起動  </p>
+<p>docker compose を利用し、VC コントローラのコンテナを起動する。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a># docker-compose up -d
+</span></code></pre></div>
+<p>コンテナが起動したことを確認する。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ubuntu@ubuntu:~/ocs-vcp-portable$ docker ps
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>CONTAINER ID   IMAGE                                                                 COMMAND                  CREATED         STATUS                  PORTS     NAMES
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>1e17a50b5382   nginx:1.27.3                                                          "/docker-entrypoint.…"   1 minutes ago    Up 1 minutes                       ocs-vcp-portable-nginx-1
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>da594c31e6d6   harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0                       "/usr/bin/supervisor…"   1 minutes ago      Up 1 minutes                         ocs-vcp-portable-occtr-1
+</span></code></pre></div>
+</li>
+<li>
+<p>VCコントローラ初期化  </p>
+<p>以下のコマンドを実行してVCコントローラを初期化する。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a># docker-compose exec occtr vcc init
+</span></code></pre></div>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">停止・削除等、その他の管理操作</p>
+<p>VCコントローラの停止、再起動、破棄などの管理操作については、<a href="../manipulation/">VCコントローラ 各種操作手順</a> を参照すること。</p>
+</div>
+<h3 id="_10">サービス一覧<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p>以下の各サービスが、Dockerコンテナとして起動する。</p>
+<table>
+<thead>
+<tr>
+<th>コンテナ</th>
+<th>サービス</th>
+<th>公開ポート番号</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>occtr</td>
+<td>VCP REST API</td>
+<td>443</td>
+<td>VCコントローラのREST API</td>
+</tr>
+<tr>
+<td>vault</td>
+<td>OpenBao</td>
+<td></td>
+<td>クラウドプロバイダの認証情報等を管理</td>
+</tr>
+<tr>
+<td>serf</td>
+<td>serf</td>
+<td>7373(TCP),7943(TCP/UDP)</td>
+<td>各ノードの死活監視、VCノードからのアクセス有</td>
+</tr>
+<tr>
+<td>grafana</td>
+<td>Grafana</td>
+<td></td>
+<td>GrafanaのWeb UI</td>
+</tr>
+<tr>
+<td>nginx</td>
+<td>Nginx</td>
+<td>8080(TCP)</td>
+<td>ユーザアクセスの入口</td>
+</tr>
+<tr>
+<td>consul</td>
+<td>consul</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>jupyter</td>
+<td>jupyter</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>redis</td>
+<td>redis</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>prometheus</td>
+<td>prometheus</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>registry</td>
+<td>registry</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>worker</td>
+<td>worker</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>worker-update</td>
+<td>worker-update</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Grafana, jupyter は 初期設定ではnginxを通してアクセスするよう設定されている（<code>/grafana</code>, <code>/jupyter</code> でアクセス）。</p>
+</div>
+<h2 id="web-ui">Web UI<a class="headerlink" href="#web-ui" title="Permanent link">&para;</a></h2>
+<h3 id="grafana">Grafana<a class="headerlink" href="#grafana" title="Permanent link">&para;</a></h3>
+<p>VC利用者は、 <code>http://{VCコントローラのアドレス}:8080/grafana/</code> をWebブラウザで開くと
+Grafanaのダッシュボードを利用できる。</p>
+<p>デフォルトで設定されているアカウントは以下のとおり。  </p>
+<ul>
+<li>ID: <code>admin</code></li>
+<li>パスワード: [GF_SECURITY_ADMIN_PASSWORD　に設定したパスワード]</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["content.code.copy","content.code.select","navigation.top","navigation.path"],"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.49251538.min.js"></script>
+      
+    
+  </body>
+</html>
