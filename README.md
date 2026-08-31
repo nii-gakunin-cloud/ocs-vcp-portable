@@ -25,27 +25,34 @@ VCP ポータブル版のご利用にあたり、ユーザ登録をお願いし�
 
 - 設定ファイル等セットアップ  
 
-    内部で使用する証明書等の作成や環境変数の設定を行います。  
+    - 証明書、環境変数等  
 
-    ```
-    sudo bash init.sh
-    ```
+        内部で使用する証明書等の作成や環境変数の設定を行います。  
 
-    作成された `.env` の内容が正しいことを確認してください。  
-    `NGINX_PROXY_HOST`は手動での設定が必須です。外部公開用ホスト名を設定してください。  
-    デフォルトの設定では、このNginxでTLS終端を行う設定となっているため、`localhost`等で検証を行う場合は、`./nginx/nginx.conf.template` の内容を変更してください。  
+        ```
+        sudo bash init.sh
+        ```
 
-    ex. localhostでの検証向け設定例
+        作成された `.env` の内容が正しいことを確認してください。  
+        `NGINX_PROXY_HOST`は手動での設定が必須です。外部公開用ホスト名を設定してください。  
+        デフォルトの設定では、このNginxでTLS終端を行う設定となっているため、`localhost`等で検証を行う場合は、`./nginx/nginx.conf.template` の内容を変更してください。  
 
-    ```
-    - listen 8080 ssl;
-    + listen 8080;
-    server_name ${NGINX_PROXY_HOST};
-    - ssl_certificate      /etc/nginx/certs/fullchain.pem;
-    - ssl_certificate_key  /etc/nginx/certs/privkey.pem;
-    ```
+        ex. localhostでの検証向け設定例
 
-    (項目一覧: occtrのドキュメント参照)  
+        ```
+        - listen 8080 ssl;
+        + listen 8080;
+        server_name ${NGINX_PROXY_HOST};
+        - ssl_certificate      /etc/nginx/certs/fullchain.pem;
+        - ssl_certificate_key  /etc/nginx/certs/privkey.pem;
+        ```
+
+        (項目一覧: occtrのドキュメント参照)  
+
+    - VPNカタログ(`config/vpn_catalog.yml`)  
+
+        利用するクラウドプロバイダごとのネットワーク設定（Region, subnet等）を記載します。  
+        記載する項目: [リファレンス-VPNカタログ](./docs/references/vpncatalog.md)  
 
 - コンテナ起動  
 
