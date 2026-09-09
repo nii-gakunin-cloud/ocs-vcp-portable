@@ -71,7 +71,7 @@ s.xxxxxxxxxxxxx
 `config/vpn_catalog.yml` ファイルにVPNカタログの内容を記述し、コマンドを実行することで設定を反映させる。
 
 ```
-# docker compose exec occtr vcc vpn-catalog set
+# docker compose exec occtr vcc vpncatalog set
 ```
 
 ### ログの確認

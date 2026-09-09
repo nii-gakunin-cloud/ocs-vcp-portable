@@ -152,6 +152,14 @@ services:
   #     - /sys:/sys:ro
   #     - /var/lib/docker/:/var/lib/docker:ro
   #     - /dev/disk/:/dev/disk:ro
+  # fluentd:
+  #   image: fluent/fluentd:v1.16-debian
+  #   volumes:
+  #     - ./conf/:/fluentd/etc
+  #   ports:
+  #     - "24224:24224"
+  #     - "24224:24224/udp"
+
   vault:
     restart: unless-stopped
     build:
