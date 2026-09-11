@@ -169,6 +169,7 @@ services:
       - ./vault/data:/bao/data
   redis:
     image: redis:8-alpine
+    restart: unless-stopped
   worker-update:
     restart: unless-stopped
     image: ${OCCTR_IMAGE}
