@@ -36,10 +36,11 @@ VCコントローラの実行環境に以下のソフトウェアがインスト
 
 ### 環境変数の設定
 
-VCコントローラ起動時の環境変数設定として、 `.env` ファイルや `docker-compose.yml` ファイル等にて、以下の環境変数を設定する。  
+VCコントローラ起動時の環境変数設定として、 `.env` ファイルや `docker compose.yml` ファイル等にて、以下の環境変数を設定する。  
 
 |必須|項目名|意味|デフォルト値|備考|
 |----|-----|----|-----------|---|
+|✓|OCCTR_IMAGE|VCコントローラコンテナイメージ| - |occtr, worker, worker-update で共通|
 |✓|VCP_VCC_PRIVATE_IPMASK | クラウドインスタンスと接続可能なVCコントローラ プライベートIPアドレス (例: `10.0.2.15/24`) | - ||
 |✓|GF_SECURITY_ADMIN_PASSWORD | Grafanaの管理者パスワード | - ||
 |✓|SERF_ADVERTISE | Serfのadvertise addr | - | 基本的に、vccが起動するマシンのIPアドレスを指定する |
@@ -68,7 +69,32 @@ jupyter環境からポータブルVCコントローラ・vaultに対してHTTPS�
 
 !!! note
 
-    `tools/create_dummy_cert.sh` スクリプトを使用して、自己署名証明書を作成することができる。スクリプト実行後、`cert/` ディレクトリに `occtr_ca.crt`, `occtr.crt`, `occtr.key` の3つのファイルが生成される。
+    `tools/create_dummy_cert.sh` スクリプトを使用して、自己署名証明書を作成することができる。スクリプト実行後、`cert/` ディレクトリに 証明書ファイルが生成される。
+
+### nginxのTLS証明書
+
+`nginx/nginx.conf.template` は、`NGINX_PROXY_HOST` に設定したFQDN（VCコントローラ設置マシンに付与したグローバルIPアドレスに対応するドメイン）に対して、利用者のブラウザ等から直接アクセスされることを前提としており、nginx自身がTLS終端を行う設定になっている。  
+そのため、この前提で運用する場合は、`NGINX_PROXY_HOST` に対応する正規のTLSサーバ証明書（Let's Encrypt等で取得したもの）を以下のファイルとして配置する必要がある。
+
+- `nginx/certs/fullchain.pem`
+- `nginx/certs/privkey.pem`
+
+!!! note
+
+    これらは `cert/` に配置する occtr/vault 用の証明書（自己署名可）とは別物であり、外部に公開する際に利用者のブラウザ等から正当な証明書として検証される必要がある。
+
+一方、前段に別のロードバランサやリバースプロキシを配置し、そちら側でTLS終端を行う構成（nginxコンテナへの到達時点では既に平文通信となる構成）の場合や、`localhost` 等でのローカル動作確認を行う場合は、この証明書は不要である。  
+その場合は `nginx/nginx.conf.template` を以下のように変更し、nginxはTLSなしで待ち受けるよう設定する。
+
+```diff
+- listen 8080 ssl;
++ listen 8080;
+  server_name ${NGINX_PROXY_HOST};
+- ssl_certificate      /etc/nginx/certs/fullchain.pem;
+- ssl_certificate_key  /etc/nginx/certs/privkey.pem;
++ #ssl_certificate      /etc/nginx/certs/fullchain.pem;
++ #ssl_certificate_key  /etc/nginx/certs/privkey.pem;
+```
 
 ### クラウド仮想ネットワーク定義ファイル
 
@@ -261,7 +287,7 @@ VCコントローラから、VCノードとして起動したインスタンス�
     docker compose を利用し、VC コントローラのコンテナを起動する。
 
     ```
-    # docker-compose up -d
+    # docker compose up -d
     ```
 
     コンテナが起動したことを確認する。
@@ -271,14 +297,7 @@ VCコントローラから、VCノードとして起動したインスタンス�
     CONTAINER ID   IMAGE                                                                 COMMAND                  CREATED         STATUS                  PORTS     NAMES
     1e17a50b5382   nginx:1.27.3                                                          "/docker-entrypoint.…"   1 minutes ago    Up 1 minutes                       ocs-vcp-portable-nginx-1
     da594c31e6d6   harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0                       "/usr/bin/supervisor…"   1 minutes ago      Up 1 minutes                         ocs-vcp-portable-occtr-1
-    ```
-
-3. VCコントローラ初期化  
-
-    以下のコマンドを実行してVCコントローラを初期化する。
-
-    ```
-    # docker-compose exec occtr vcc init
+    ~~~~~~~~~
     ```
 
 !!! note "停止・削除等、その他の管理操作"
@@ -320,3 +339,27 @@ Grafanaのダッシュボードを利用できる。
 
 - ID: `admin`
 - パスワード: [GF_SECURITY_ADMIN_PASSWORD　に設定したパスワード]
+
+### Jupyter
+
+VC利用者は、 `http://{VCコントローラのアドレス}:8080/jupyter/` をWebブラウザで開くと
+VCP SDKが利用可能なJupyterLab環境にアクセスできる。
+
+初回アクセス時はログイン用トークンの入力が必要になる。以下のコマンドでコンテナのログから初期トークンを確認する。
+
+```
+docker compose logs jupyter | grep token
+```
+
+ログイン後、`work/setup/credential_setup.ipynb` を開き、VCコントローラ用アクセストークン（[VCP REST APIアクセストークンの発行](manipulation.md#vcp-rest-apiアクセストークンの発行)で発行したもの）を設定してVCP SDKクライアントを初期化することで、VCコントローラの機能が利用できる。
+
+### Consul
+
+VCコントローラの管理者は、 `http://{VCコントローラのアドレス}:8080/consul/` をWebブラウザで開くと
+Consulの管理画面（サービスカタログ・KVSの状態確認等）にアクセスできる。
+
+ConsulはACLが有効化されているため、ログイン(Log in)時に「ACL Token」欄へトークンを入力する必要がある。初期状態では `.env` の `CONSUL_INITIAL_TOKEN` に設定した値（管理者用トークン）を使用する。
+
+!!! note
+
+    Consul UIはVCコントローラの内部状態を確認するための管理者向け機能であり、VC利用者が通常の利用で参照する必要はない。
