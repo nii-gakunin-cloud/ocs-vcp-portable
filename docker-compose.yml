@@ -32,9 +32,7 @@ services:
       - "8080:8080"
     volumes:
        - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
-       - ./nginx/certs:/etc/nginx/certs:ro
-    environment:
-       - NGINX_PROXY_HOST=${NGINX_PROXY_HOST:?}
+      #  - ./nginx/certs:/etc/nginx/certs:ro # サーバ証明書を配置する場合
     depends_on:
       - jupyter
       - grafana

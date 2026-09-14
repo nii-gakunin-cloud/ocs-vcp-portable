@@ -37,20 +37,19 @@ docker compose pull occtr worker worker-update
 docker compose up -d --scale worker=<ワーカー数> occtr worker worker-update
 ```
 
-!!! info
-
-  `occtr`, `worker`, `worker-update` は同じコンテナイメージを利用している。
+> [!NOTE]
+> `occtr`, `worker`, `worker-update` は同じコンテナイメージを利用している。
 
 
 ### TLS証明書の更新
 
 VCコントローラは用途が異なる2種類のTLS証明書を利用しており、更新手順もそれぞれ異なる。
 
-- occtr/vault/jupyter用証明書 (`cert/`): occtr・vault・jupyterの各コンテナ間の内部通信で使用する証明書。互いに信頼させるための自己署名CAを用いるのが基本であり、外部（ブラウザ等）から直接検証されることは想定していない。
+- サービス間通信用SSL証明書作成 (`cert/`): occtr・vault・jupyterの各コンテナ間の内部通信で使用する証明書。互いに信頼させるための自己署名CAを用いるのが基本であり、外部（ブラウザ等）から直接検証されることは想定していない。
 
-- nginx用証明書 (`nginx/certs/`): 利用者のブラウザ等からnginxへ外部アクセスする際にnginxがTLS終端で使用する証明書。ブラウザ等から正当な証明書として検証される必要があるため、[nginxのTLS証明書](installation.md#nginxのtls証明書)の構成を採用している場合は、正規のTLSサーバ証明書を配置する必要がある。
+- nginx用証明書 (`nginx/certs/`): 利用者のブラウザ等からnginxへ外部アクセスする際にnginxがTLS終端で使用する証明書。ブラウザ等から正当な証明書として検証される必要があるため、[nginxのTLS証明書](examples.md#tls設定)の構成を採用している場合は、正規のTLSサーバ証明書を配置する必要がある。
 
-#### occtr/vault/jupyter用証明書 (`cert/`)
+#### サービス間通信用SSL証明書作成 (`cert/`)
 
 自己署名証明書を再作成する場合は `tools/create_dummy_cert.sh` を実行する。
 
@@ -74,9 +73,8 @@ docker compose restart occtr vault jupyter
 docker compose restart nginx
 ```
 
-!!! note
-
-    前段の別のロードバランサやリバースプロキシでTLS終端を行っている構成等、nginxでTLS終端を行わない構成にしている場合は、このnginx用証明書の更新は不要である。
+> [!NOTE]
+> 前段の別のロードバランサやリバースプロキシでTLS終端を行っている構成等、nginxでTLS終端を行わない構成にしている場合は、このnginx用証明書の更新は不要である。
 
 ### Grafana管理者パスワードの変更
 
@@ -91,9 +89,8 @@ docker compose exec grafana grafana cli admin reset-admin-password <新しいパ
 
 `CONSUL_INITIAL_TOKEN` はConsulのACLブートストラップ時（初回起動時）にのみ反映される値であり、一度ブートストラップされたトークンは `consul-data` ボリュームに永続化される。そのため、稼働開始後に `.env` を書き換えてコンテナを再起動しても、稼働中のトークンはローテーションされない。
 
-!!! failure
-
-  Consul初期トークンの更新は非サポート  
+> [!CAUTION]
+> Consul初期トークンの更新は非サポート
 
 ### workerのスケール変更
 
@@ -147,13 +144,36 @@ VC利用者に対して発行することができる。
 s.xxxxxxxxxxxxx
 ```
 
-### VPNカタログの更新
+### クラウド仮想ネットワーク定義ファイルの更新
 
-`config/vpn_catalog.yml` ファイルにVPNカタログの内容を記述し、コマンドを実行することで設定を反映させる。
+利用するクラウドのリージョンや仮想プライベートネットワークに関する情報をVCコントローラに登録・参照するための機能がある。これを「クラウドVPNカタログ」と呼ぶ。  
+
+クラウドVPNカタログでは、クラウドプロバイダ毎に複数の仮想プライベートネットワークを定義することができ、ポータブルVCコントローラでは YAML 形式で記述されたファイルを `config/vpn_catalog.yml` に配置する。  
+
+[参考: VPNカタログ項目一覧](references/vpncatalog.md)  
+
+例として、aws用の設定を示す。  
+
+```yaml
+cci_version: '1.0'
+
+aws:
+default:
+    aws_region: ap-northeast-1
+    aws_vpc_subnet_id: subnet-fffffffffffffffff
+    aws_vpc_security_group_id: sg-fffffffffffffffff
+    aws_availability_zone: ap-northeast-1a
+    private_network_ipmask: 172.30.2.0/24
+```
+
+`config/vpn_catalog.yml` は変更後に反映する必要がある。反映するには、以下のコマンドを実行する。  
 
 ```
-# docker compose exec occtr vcc vpncatalog set
+docker compose exec occtr vcc vpncatalog set
 ```
+
+※正常終了した場合、特に出力は無い。
+
 
 ### ログの確認
 
@@ -165,28 +185,68 @@ s.xxxxxxxxxxxxx
 
 ポータブルVCコントローラコンテナ内の `/opt/occ/var/logs` 配下にもログが出力される。
 
-### バックアップ & リストア
+### バックアップ & リストア  
+
+起動中のVCコントローラ関連サービスのデータをバックアップ & リストアする手順について記載する。  
+なお、操作はすべて`ocs-vcp-portable` 直下で行うことを想定している。  
+特に記載の無い場合、バックアップしたファイル等をリストアする場合は、元の場所に配置すればよい。  
 
 - バックアップ  
 
   各コンテナのデータディレクトリは、コンテナホスト側の `volume` 配下にバインドマウントされている。  
   バックアップは、このディレクトリを退避する。  
+  バックアップ対象となり得るディレクトリ・ファイルは以下の通り。
+  
+  > [!NOTE]
+  > `docker compose down`（または `stop`）を行い、コンテナ停止後にバックアップを行うことが望ましい。
 
-  ```
-  sudo tar czf volume.tgz volume
-  ```
+  - `volume/`  
+
+    各コンテナ（`occtr`, `vault` 等）のデータディレクトリがマウントされているディレクトリ。  
+
+    ex. 一式をtar ballにまとめる    
+  
+    ```
+    sudo tar czf volume.tgz volume
+    ```
+
+  - `.env`  
+  
+    コンテナの環境変数設定ファイル。
+
+  - `nginx/nginx.conf.template`  
+
+    nginx設定ファイル。編集している場合、こちらのバックアップが推奨される。  
+
+  - `nginx/certs`  
+
+    nginxに設定するTLS証明書用のディレクトリ。NginxでTLSを有効化しない場合は不要。  
+
+  - `config/`  
+
+    VCコントローラ用の設定ファイル（`vpnカタログ`）配置用のディレクトリ。  
+
+  > [!TIP]
+  > その他変更・追加したファイルも確認すること。
 
 - リストア
 
-  バックアップした `volume` ディレクトリを再配置する。  
+  バックアップしたディレクトリ・ファイルを再配置する。  
 
-  ```
-  sudo tar xzfp volume.tgz --numeric-owner
-  ```
+  - コンテナ起動済みの場合は、いったん停止する  
 
-  コンテナ起動済みの場合は、いったん起動しなおす。  
+    ```
+    docker compose down
+    ```
 
-  ```
-  docker compose down
-  docker compose up -d --scale worker=<worker数>
-  ```
+  - （参考）`volume` ディレクトリは、コンテナ上のユーザに合わせるため、権限を維持する
+
+    ```
+    sudo tar xzfp volume.tgz --numeric-owner
+    ```
+
+  - コンテナを起動する   
+
+    ```
+    docker compose up -d --scale worker=<worker数>
+    ```
