@@ -1,18 +1,13 @@
 # インストール
 
+Docker Compose を用いたマルチコンテナ構成により、VCP関連サービス群を起動します。
+
 ## 要件
 
 ### 動作確認済みの OS, Distribution 環境
 
 * Ubuntu Server 22.04 LTS
 * Ubuntu Server 24.04 LTS
-
-### 必須ソフトウェア
-
-VCコントローラの実行環境に以下のソフトウェアがインストールされていることを前提とする。
-
-* Docker
-* Docker Compose
 
 ### ディスク容量要件
 
@@ -32,46 +27,80 @@ VCコントローラの実行環境に以下のソフトウェアがインスト
     1. VCコントローラとクラウド仮想ネットワーク環境をVPN接続する
     1. VCコントローラとクラウド仮想ネットワーク環境を同一ネットワーク上に配置する
 
+## 構成の確認
+
+ここでは、VCコントローラ関連サービス群を１つのマシン上にセットアップする標準的な構成を想定している。  
+
+![](../images/architecture.drawio.png)
+
+
 ## 準備
 
-### 環境変数の設定
+### (参考) プロバイダごとの設定例
 
-VCコントローラ起動時の環境変数設定として、 `.env` ファイルや `docker compose.yml` ファイル等にて、以下の環境変数を設定する。  
+[docs/references/providers]()（リンク準備中）に、プロバイダによっては、事前セットアップ手順を記載している。  
 
-|必須|項目名|意味|デフォルト値|備考|
-|----|-----|----|-----------|---|
-|✓|OCCTR_IMAGE|VCコントローラコンテナイメージ| - |occtr, worker, worker-update で共通|
-|✓|VCP_VCC_PRIVATE_IPMASK | クラウドインスタンスと接続可能なVCコントローラ プライベートIPアドレス (例: `10.0.2.15/24`) | - ||
-|✓|GF_SECURITY_ADMIN_PASSWORD | Grafanaの管理者パスワード | - ||
-|✓|SERF_ADVERTISE | Serfのadvertise addr | - | 基本的に、vccが起動するマシンのIPアドレスを指定する |
-|✓|NGINX_PROXY_HOST | ユーザがアクセスする際に指定するFQDN | - ||
-|✓|CONSUL_INITIAL_TOKEN | Consulの管理者用トークン(UUID) | - ||
-||CONSUL_TOKEN_FILE | VCCがconsul kvsを利用するためのトークンファイルパス | `/opc/occ/var/occtr/consul_token` | |
-||CONSUL_TOKEN | VCCがconsul kvsを利用するためのトークン | | 指定した場合、`CONSUL_TOKEN_FILE` より優先される |
-||CONSUL_HTTP_ADDR | Consulのアドレス | `localhost:8500` | |
-||CONSUL_KVS_URL | Consul kvs のURL | `http://{CONSUL_HTTP_ADDR}/v1/kv` | |
-||BC_REGISTRY_HOST | コンテナレジストリホスト | `harbor.vcloud.nii.ac.jp` | ポートは固定で`5000`を使用 |
-||REQUESTS_CA_BUNDLE | SSL証明書のパス | `/etc/ssl/certs/ca-certificates.crt` | |
-||VAULT_API_URL | VaultAPIアクセス用URL | `https://localhost:8200/v1` | |
-||REDIS_HOST | redisアクセス用ホスト指定 | `localhost` | |
-||REDIS_PORT | redisアクセス用ポート指定 | `6379` | |
-||REDIS_PASSWORD | redisアクセス用パスワード指定 | | |
+### 初期セットアップ
 
-### SSL証明書
+以下のコマンドを実行し、必要なディレクトリの作成等を行う。  
 
-jupyter環境からポータブルVCコントローラ・vaultに対してHTTPS通信を行うため、SSL証明書を準備する必要がある。証明書は、`cert/` ディレクトリに配置する。
+```
+sudo bash init.sh
+```
 
-- SSLサーバ証明書
-    * Subject Alternative Name:  `localhost`, `127.0.0.1`, `occtr` を設定
-    * ファイル: `occtr.crt`, `occtr.key`
-- 上記SSLサーバ証明書を発行したCA認証局の自己署名証明書
-    * ファイル: `occtr_ca.crt`
+以下の設定がなされる。  
 
-!!! note
+- Docker (composeプラグイン含) のインストール
+- データ用ディレクトリの作成
+- 環境変数設定  
 
-    `tools/create_dummy_cert.sh` スクリプトを使用して、自己署名証明書を作成することができる。スクリプト実行後、`cert/` ディレクトリに 証明書ファイルが生成される。
+    VCコントローラ起動時の環境変数設定として、 `.env` ファイルにて、以下の環境変数を設定する。  
+    `init.sh` の実行により、一部項目は自動設定される。
 
-### nginxのTLS証明書
+    !!! tips
+
+        基本的には、自動作成された `.env`ファイルの設定値をそのまま利用可能。ただし、`NGINX_PROXY_HOST` はユーザの環境に合わせて必ず設定が必要。
+
+    |必須|項目名|意味|デフォルト値|備考|
+    |----|-----|----|-----------|---|
+    |✓|OCCTR_IMAGE|VCコントローラコンテナイメージ| - |occtr, worker, worker-update で共通|
+    |✓|VCP_VCC_PRIVATE_IPMASK | クラウドインスタンスと接続可能なVCコントローラ プライベートIPアドレス (例: `10.0.2.15/24`) | - ||
+    |✓|GF_SECURITY_ADMIN_PASSWORD | Grafanaの管理者パスワード | - ||
+    |✓|SERF_ADVERTISE | Serfのadvertise addr | - | 基本的に、vccが起動するマシンのIPアドレスを指定する |
+    |✓|NGINX_PROXY_HOST | ユーザがVCコントローラ上で稼働するjupyterやgrafanaにアクセスする際に指定するFQDN | - ||
+    |✓|CONSUL_INITIAL_TOKEN | Consulの管理者用トークン(UUID) | - ||
+    ||CONSUL_TOKEN_FILE | VCCがconsul kvsを利用するためのトークンファイルパス | `/opc/occ/var/occtr/consul_token` | |
+    ||CONSUL_TOKEN | VCCがconsul kvsを利用するためのトークン | | 指定した場合、`CONSUL_TOKEN_FILE` より優先される |
+    ||CONSUL_HTTP_ADDR | Consulのアドレス | `localhost:8500` | |
+    ||CONSUL_KVS_URL | Consul kvs のURL | `http://{CONSUL_HTTP_ADDR}/v1/kv` | |
+    ||BC_REGISTRY_HOST | コンテナレジストリホスト | `harbor.vcloud.nii.ac.jp` | ポートは固定で`5000`を使用 |
+    ||REQUESTS_CA_BUNDLE | SSL証明書のパス | `/etc/ssl/certs/ca-certificates.crt` | |
+    ||VAULT_API_URL | VaultAPIアクセス用URL | `https://localhost:8200/v1` | |
+    ||REDIS_HOST | redisアクセス用ホスト指定 | `localhost` | |
+    ||REDIS_PORT | redisアクセス用ポート指定 | `6379` | |
+    ||REDIS_PASSWORD | redisアクセス用パスワード指定 | | |
+
+- サービス間通信用SSL証明書作成  
+
+    jupyter環境からポータブルVCコントローラ・vaultに対してHTTPS通信を行うため、SSL証明書を準備する必要がある。証明書は、`cert/` ディレクトリに配置する。  
+
+    - SSLサーバ証明書
+        * Subject Alternative Name:  `localhost`, `127.0.0.1`, `occtr` を設定
+        * ファイル: `occtr.crt`, `occtr.key`
+    - 上記SSLサーバ証明書を発行したCA認証局の自己署名証明書
+        * ファイル: `occtr_ca.crt`
+
+    !!! note
+
+        手動作成する場合、`tools/create_dummy_cert.sh` スクリプトを使用して、自己署名証明書を作成することができる。スクリプト実行後、`cert/` ディレクトリに 証明書ファイルが生成される。  
+        作成した証明書は適切な権限設定を行う。  
+
+        ```
+        chown root:1000 "cert/occtr.key"
+        chmod 640 "cert/occtr.key"
+        ```
+
+### nginxのSSL証明書
 
 `nginx/nginx.conf.template` は、`NGINX_PROXY_HOST` に設定したFQDN（VCコントローラ設置マシンに付与したグローバルIPアドレスに対応するドメイン）に対して、利用者のブラウザ等から直接アクセスされることを前提としており、nginx自身がTLS終端を行う設定になっている。  
 そのため、この前提で運用する場合は、`NGINX_PROXY_HOST` に対応する正規のTLSサーバ証明書（Let's Encrypt等で取得したもの）を以下のファイルとして配置する必要がある。
@@ -285,9 +314,10 @@ VCコントローラから、VCノードとして起動したインスタンス�
 2. 起動  
 
     docker compose を利用し、VC コントローラのコンテナを起動する。
+    VCPがリクエストを処理するワーカー数は `worker=2` の数値部分で設定を行う。
 
     ```
-    # docker compose up -d
+    # docker compose up -d --scale worker=2
     ```
 
     コンテナが起動したことを確認する。
@@ -300,27 +330,22 @@ VCコントローラから、VCノードとして起動したインスタンス�
     ~~~~~~~~~
     ```
 
-!!! note "停止・削除等、その他の管理操作"
-
-    VCコントローラの停止、再起動、破棄などの管理操作については、[VCコントローラ 各種操作手順](manipulation.md) を参照すること。
-
-
 ### サービス一覧  
 
 以下の各サービスが、Dockerコンテナとして起動する。
 
 |コンテナ|サービス|公開ポート番号|用途|
 |-------|--------|-------------|----|
-|occtr|VCP REST API|443|VCコントローラのREST API|
+|occtr|VCP REST API||VCコントローラのREST API|
 |vault|OpenBao||クラウドプロバイダの認証情報等を管理|
-|serf|serf|7373(TCP),7943(TCP/UDP)|各ノードの死活監視、VCノードからのアクセス有|
+|serf|serf|7947(TCP/UDP)|各VCノードの死活監視のため、VCPネットワーク内で利用|
 |grafana|Grafana||GrafanaのWeb UI|
 |nginx|Nginx|8080(TCP)|ユーザアクセスの入口|
 |consul|consul|||
 |jupyter|jupyter|||
 |redis|redis|||
 |prometheus|prometheus|||
-|registry|registry|||
+|registry|registry|5000(TCP)|各VCノードから利用することを想定、VCPネットワーク内で利用|
 |worker|worker|||
 |worker-update|worker-update|||
 
@@ -332,17 +357,17 @@ VCコントローラから、VCノードとして起動したインスタンス�
 
 ### Grafana
 
-VC利用者は、 `http://{VCコントローラのアドレス}:8080/grafana/` をWebブラウザで開くと
+VC利用者は、 `https://{VCコントローラのアドレス}:8080/grafana/` をWebブラウザで開くと
 Grafanaのダッシュボードを利用できる。
 
 デフォルトで設定されているアカウントは以下のとおり。  
 
 - ID: `admin`
-- パスワード: [GF_SECURITY_ADMIN_PASSWORD　に設定したパスワード]
+- パスワード: [ `.env` にて、`GF_SECURITY_ADMIN_PASSWORD`　に設定したパスワード ]
 
 ### Jupyter
 
-VC利用者は、 `http://{VCコントローラのアドレス}:8080/jupyter/` をWebブラウザで開くと
+VC利用者は、 `https://{VCコントローラのアドレス}:8080/jupyter/` をWebブラウザで開くと
 VCP SDKが利用可能なJupyterLab環境にアクセスできる。
 
 初回アクセス時はログイン用トークンの入力が必要になる。以下のコマンドでコンテナのログから初期トークンを確認する。
@@ -355,7 +380,7 @@ docker compose logs jupyter | grep token
 
 ### Consul
 
-VCコントローラの管理者は、 `http://{VCコントローラのアドレス}:8080/consul/` をWebブラウザで開くと
+VCコントローラの管理者は、 `https://{VCコントローラのアドレス}:8080/consul/` をWebブラウザで開くと
 Consulの管理画面（サービスカタログ・KVSの状態確認等）にアクセスできる。
 
 ConsulはACLが有効化されているため、ログイン(Log in)時に「ACL Token」欄へトークンを入力する必要がある。初期状態では `.env` の `CONSUL_INITIAL_TOKEN` に設定した値（管理者用トークン）を使用する。
@@ -363,3 +388,7 @@ ConsulはACLが有効化されているため、ログイン(Log in)時に「ACL
 !!! note
 
     Consul UIはVCコントローラの内部状態を確認するための管理者向け機能であり、VC利用者が通常の利用で参照する必要はない。
+
+## 参考
+
+- 停止・削除等、その他の管理操作: [VCコントローラ 各種操作手順](manipulation.md)

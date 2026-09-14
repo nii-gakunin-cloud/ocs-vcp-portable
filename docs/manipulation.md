@@ -165,28 +165,70 @@ s.xxxxxxxxxxxxx
 
 ポータブルVCコントローラコンテナ内の `/opt/occ/var/logs` 配下にもログが出力される。
 
-### バックアップ & リストア
+### バックアップ & リストア  
+
+起動中のVCコントローラ関連サービスのデータをバックアップ & リストアする手順について記載する。  
+なお、操作はすべて`ocs-vcp-portable` 直下で行うことを想定している。  
+特に記載の無い場合、バックアップしたファイル等をリストアする場合は、元の場所に配置すればよい。  
 
 - バックアップ  
 
   各コンテナのデータディレクトリは、コンテナホスト側の `volume` 配下にバインドマウントされている。  
   バックアップは、このディレクトリを退避する。  
+  バックアップ対象となり得るディレクトリ・ファイルは以下の通り。
+  
+  !!! note
 
-  ```
-  sudo tar czf volume.tgz volume
-  ```
+    `docker compose down`（または `stop`）を行い、コンテナ停止後にバックアップを行うことが望ましい。
+
+  - `volume/`  
+
+    各コンテナ（`occtr`, `vault` 等）のデータディレクトリがマウントされているディレクトリ。  
+
+    ex. 一式をtar ballにまとめる    
+  
+    ```
+    sudo tar czf volume.tgz volume
+    ```
+
+  - `.env`  
+  
+    コンテナの環境変数設定ファイル。
+
+  - `nginx/nginx.conf.template`  
+
+    nginx設定ファイル。編集している場合、こちらのバックアップが推奨される。  
+
+  - `nginx/certs`  
+
+    nginxに設定するTLS証明書用のディレクトリ。NginxでTLSを有効化しない場合は不要。  
+
+  - `config/`  
+
+    VCコントローラ用の設定ファイル（`vpnカタログ`）配置用のディレクトリ。  
+
+  !!! tips
+
+    その他変更・追加したファイルも確認すること。
 
 - リストア
 
-  バックアップした `volume` ディレクトリを再配置する。  
+  バックアップしたディレクトリ・ファイルを再配置する。  
 
-  ```
-  sudo tar xzfp volume.tgz --numeric-owner
-  ```
+  - コンテナ起動済みの場合は、いったん停止する  
 
-  コンテナ起動済みの場合は、いったん起動しなおす。  
+    ```
+    docker compose down
+    ```
 
-  ```
-  docker compose down
-  docker compose up -d --scale worker=<worker数>
-  ```
+  - （参考）`volume` ディレクトリは、コンテナ上のユーザに合わせるため、権限を維持する
+
+    ```
+    sudo tar xzfp volume.tgz --numeric-owner
+    ```
+
+  - コンテナを起動する   
+
+    ```
+    docker compose up -d --scale worker=<worker数>
+    ```
