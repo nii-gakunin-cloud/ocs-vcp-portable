@@ -49,7 +49,7 @@ services:
       - ./cert/occtr_ca.crt:/usr/local/share/ca-certificates/occtr_ca.crt:ro
       - ./volume/jupyter/work:/home/jovyan/work
       - ./volume/jupyter/.ssh:/home/jovyan/.ssh
-      - jupyter-data:/home/jovyan/.jupyter
+      - ./volume/jupyter/.jupyter:/home/jovyan/.jupyter
     environment:
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
       - TZ=JST-9
@@ -73,7 +73,7 @@ services:
       - REGISTRY_PROXY_REMOTEURL=https://harbor.vcloud.nii.ac.jp
       - REGISTRY_LOG_LEVEL=info
     volumes:
-      - registry-data:/var/lib/registry
+      - ./volume/registry/data:/var/lib/registry
   grafana:
     image: grafana/grafana:12.2.0
     restart: unless-stopped
@@ -82,7 +82,7 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
-      - grafana-data:/var/lib/grafana
+      - ./volume/grafana/data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD:?GF_SECURITY_ADMIN_PASSWORD environment variable is required}
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
@@ -94,8 +94,8 @@ services:
     #   - monitoring
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
-      - ./prometheus/targets.json:/etc/prometheus/targets.json
+      - ./volume/prometheus/data:/prometheus
+      - ./volume/prometheus/targets.json:/etc/prometheus/targets.json
   serf:
     build:
       context: ./serf
@@ -103,8 +103,8 @@ services:
     ports:
       - "7947:7947"
     volumes:
-      - ./prometheus/targets.json:/etc/prometheus/targets.json
-      - serf-data:/usr/share/serf
+      - ./volume/prometheus/targets.json:/etc/prometheus/targets.json
+      - ./volume/serf/data:/usr/share/serf
     command: [
       "agent",
       "-node=${SERF_NODE:-serf}",
@@ -122,7 +122,7 @@ services:
     volumes:
       - ./consul/config/default.json.template:/consul/config/default.json.template:ro
       - ./consul/vcp-entrypoint.sh:/usr/local/bin/vcp-entrypoint.sh:ro
-      - consul-data:/consul/data
+      - ./volume/consul/data:/consul/data
     entrypoint: ["/bin/sh", "/usr/local/bin/vcp-entrypoint.sh"]
     command: [
       "agent",
@@ -166,7 +166,7 @@ services:
       context: ./vault
     volumes:
       - ./cert:/bao/cert:ro
-      - ./vault/data:/bao/data
+      - ./volume/vault/data:/bao/data
   redis:
     image: redis:8-alpine
     restart: unless-stopped
@@ -211,13 +211,6 @@ services:
       - ./volume/opt/occ/vc:/opt/occ/vc
     depends_on:
       - redis
-volumes:
-  jupyter-data:
-  registry-data:
-  grafana-data:
-  prometheus-data:
-  serf-data:
-  consul-data:
 # networks:
 #   vcp-public:
 #     driver: bridge

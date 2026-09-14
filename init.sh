@@ -43,7 +43,18 @@ fi
 chown root:1000 "$CERT_DIR/occtr.key"
 chmod 640 "$CERT_DIR/occtr.key"
 
+mkdir -p volume
+cd volume
+
+mkdir -p ./jupyter
+chown 1000:100 jupyter
+
 mkdir -p ./vault/data
 chown 1000:1000 ./vault/data
 chmod 770 ./vault/data
-# docker compose up -d --scale worker=3
+
+mkdir -p ./grafana/data
+chown 472:root ./grafana/data
+
+mkdir -p ./prometheus/data
+chown 65534:root ./prometheus/data
