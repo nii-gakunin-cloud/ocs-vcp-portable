@@ -27,12 +27,12 @@ fi
 
 if [ ! -e .env ]; then
     cat << EOF > .env
-OCCTR_IMAGE=harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0
-GF_SECURITY_ADMIN_PASSWORD=$(cat /dev/urandom | base64 | fold -w 10 | head -n 1)
-CONSUL_INITIAL_TOKEN=$(uuidgen)
-VCP_VCC_PRIVATE_IPMASK=$CIDR
-SERF_ADVERTISE=$IP
-BC_REGISTRY_HOST=$IP
+OCCTR_IMAGE='harbor.vcloud.nii.ac.jp/vcp/occtr:26.10.0'
+GF_SECURITY_ADMIN_PASSWORD="$(cat /dev/urandom | base64 | fold -w 10 | head -n 1)"
+CONSUL_INITIAL_TOKEN="$(uuidgen)"
+VCP_VCC_PRIVATE_IPMASK="$CIDR"
+SERF_ADVERTISE="$IP"
+BC_REGISTRY_HOST="$IP:5000"
 EOF
 fi
 
@@ -58,3 +58,8 @@ chown 472:root ./grafana/data
 
 mkdir -p ./prometheus/data
 chown 65534:root ./prometheus/data
+
+if [ ! -f ./prometheus/targets.json ]; then
+    echo '[]' > ./prometheus/targets.json
+fi
+chown 1000:1000 ./prometheus/targets.json

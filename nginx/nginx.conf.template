@@ -16,10 +16,8 @@
     }
 
     server {
-        listen 8080 ssl;
-        server_name ${NGINX_PROXY_HOST};
-        ssl_certificate      /etc/nginx/certs/fullchain.pem;
-        ssl_certificate_key  /etc/nginx/certs/privkey.pem;
+        listen 8080;
+        server_name localhost;
         client_max_body_size 20M;
 
         location /jupyter/ {

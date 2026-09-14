@@ -18,6 +18,7 @@ services:
       - VAULT_API_URL=https://vault:8200/v1
       - CONSUL_HTTP_ADDR=consul:8500
       - CONSUL_HTTP_TOKEN_FILE=/opt/occ/var/occtr/consul_token
+      - BC_REGISTRY_HOST=${BC_REGISTRY_HOST:-harbor.vcloud.nii.ac.jp}
     command: ["server"]
     depends_on:
       - serf
@@ -32,9 +33,7 @@ services:
       - "8080:8080"
     volumes:
        - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
-       - ./nginx/certs:/etc/nginx/certs:ro
-    environment:
-       - NGINX_PROXY_HOST=${NGINX_PROXY_HOST:?}
+      #  - ./nginx/certs:/etc/nginx/certs:ro # サーバ証明書を配置する場合
     depends_on:
       - jupyter
       - grafana
@@ -62,7 +61,7 @@ services:
     command:
       - start-notebook.py
       - --ServerApp.base_url=/jupyter/
-  registry:
+  registry-vcpmirror:
     image: registry:3
     restart: unless-stopped
     # networks:
@@ -71,9 +70,17 @@ services:
       - "5000:5000"
     environment:
       - REGISTRY_PROXY_REMOTEURL=https://harbor.vcloud.nii.ac.jp
-      - REGISTRY_LOG_LEVEL=info
     volumes:
-      - ./volume/registry/data:/var/lib/registry
+      - ./volume/registry-vcpmirror/data:/var/lib/registry
+  registry-local:
+    image: registry:3
+    restart: unless-stopped
+    # networks:
+    #   - vcp-internal
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./volume/registry-local/data:/var/lib/registry
   grafana:
     image: grafana/grafana:12.2.0
     restart: unless-stopped
