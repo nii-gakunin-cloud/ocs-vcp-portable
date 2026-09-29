@@ -5,7 +5,7 @@ VCPの機能を用いてクラウド環境のリソースを利用すること�
 実行環境の例として、VirtualBox などの Linux VM 環境、クラウド上のインスタンス、利用者や利用組織が所有する
 物理マシンが挙げられる。
 
-![](./media/portable_vcc.png)
+![](../images/portable_vcc.png)
 
 ## 対応クラウドプロバイダと動作環境
 

@@ -55,6 +55,8 @@ usage: vcc node-state set [-h]
                           vcid unit_name node_id {BOOTING,CONTAINER_ERROR,DELETING,HOST_ERROR,POWER_OFF,RESUMING,RUNNING,SHUTTING_DOWN,STOPPED,STOPPING,SUSPENDED,SUSPENDING,UNWATCH}
 
 Set VcNode info
+WARNING: This directly overwrites the stored node state without touching
+the actual machine, so it can leave the state inconsistent with reality.
 
 positional arguments:
   vcid
@@ -162,6 +164,7 @@ positional arguments:
 options:
   -h, --help   show this help message and exit
   -f, --force  Delete user even if the user owns VC(Unit group) (Default: False)
+               NOTE: owned VC(s) are not deleted and remain after the user is removed
 ```
 
 ## `vcc token`

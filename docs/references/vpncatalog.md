@@ -3,6 +3,8 @@
 サポートするクラウドプロバイダの VPN カタログ設定項目は以下のとおりである。  
 項目名は [Terraform Provider](https://registry.terraform.io/browse/providers) におけるリソース定義名を踏襲している。
 
+> [!WARNING]
+> サンプルは、2026年3月現在の情報に基づく。
 
 #### 共通項目
 
@@ -52,10 +54,10 @@
 
 |必須|項目名|意味|例|デフォルト値|
 |----|-----|----|--|---------|
-|o|gcp_project|プロジェクト名||||
-|o|gcp_subnetwork|サブネット名||||
-|o|gcp_region|リージョン||||
-|o|gcp_zone|ゾーン||||
+|o|gcp_project|プロジェクト名|project-sample||
+|o|gcp_subnetwork|サブネット名|samplepriv||
+|o|gcp_region|リージョン|asia-northeast1||
+|o|gcp_zone|インスタンス配置先ゾーン名|asia-northeast1-c||
 
 #### VMware vSphere (vmware)
 
@@ -84,11 +86,11 @@
 
 |必須|項目名|意味| 例 |デフォルト値|
 |----|-----|----|----|---------|
-|o|oracle_tenancy_ocid|テナンシID||-|
-|o|oracle_compartment_id|コンパートメントID||-|
-|o|oracle_subnet_id|サブネットID||-|
-|o|oracle_region|リージョン||-|
-|o|oracle_availability_domain|可用性ドメイン||-|
+|o|oracle_tenancy_ocid|テナンシID|ocid1.tenancy.oc1..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|-|
+|o|oracle_compartment_id|コンパートメントID|ocid1.compartment.oc1..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|-|
+|o|oracle_subnet_id|サブネットID|ocid1.subnet.oc1..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|-|
+|o|oracle_region|リージョン|ap-tokyo-1|-|
+|o|oracle_availability_domain|可用性ドメイン|mkro:AP-TOKYO-1-AD-1|-|
 
 #### Proxmox VE (proxmox)
 
