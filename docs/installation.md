@@ -16,10 +16,10 @@ Docker Compose を用いたマルチコンテナ構成により、VCP関連サ�
 - [起動](#起動)
     - [VCコントローラの起動](#vcコントローラの起動)
     - [VCコントローラ利用準備](#vcコントローラ利用準備)
-    - [Jupyter Notebookサーバ ログイン](#jupyter-notebookサーバ-ログイン)
 - [クラウドプロバイダ利用設定](#クラウドプロバイダ利用設定)
     - [クラウド仮想ネットワーク定義ファイル（クラウドVPNカタログ）](#クラウド仮想ネットワーク定義ファイルクラウドvpnカタログ)
     - [VCコントローラとクラウド仮想ネットワーク間の通信設定](#vcコントローラとクラウド仮想ネットワーク間の通信設定)
+    - [Jupyter Notebookサーバ ログイン](#jupyter-notebookサーバ-ログイン)
 - [補足](#補足)
     - [TLS設定](#tls設定)
     - [Web UI](#web-ui)
@@ -48,11 +48,25 @@ Docker Compose を用いたマルチコンテナ構成により、VCP関連サ�
 
 ### ネットワーク要件
 
-対象とするクラウドの仮想ネットワーク環境上に起動するクラウドインスタンスに対して、ポータブルVCコントローラがプライベートIPアドレスでアクセスできること。
+VCコントローラとVCノード（クラウドインスタンス）が、プライベートIPアドレスで相互に通信できること。
 
 - 例
     1. VCコントローラとクラウド仮想ネットワーク環境をVPN接続する
     1. VCコントローラとクラウド仮想ネットワーク環境を同一ネットワーク上に配置する
+
+VCPの基本機能では、VCコントローラとVCノードの間で以下の通信が発生する。ファイアウォールやセキュリティグループで許可しておくこと。
+
+|方向|ポート|用途|
+|----|------|----|
+|VCノード → VCコントローラ|5000/TCP|ベースコンテナイメージの取得（registry-vcpmirror）|
+|VCノード → VCコントローラ|5001/TCP|独自イメージの取得（registry-local）|
+|双方向|7947/TCP, 7947/UDP|死活監視（serf）|
+|VCコントローラ → VCノード|22/TCP|VCノードのセットアップ開始時のSSH接続。セットアップ後は、ベースコンテナへのSSHログイン（Jupyterからの操作等）に使用する|
+|VCコントローラ → VCノード|20022/TCP|VCノード（仮想マシン）へのSSH接続。セットアップ中に仮想マシンのSSHポートを22から変更する|
+|VCコントローラ → VCノード|18083/TCP|メトリクス収集（prometheus）|
+|VCコントローラ → VCノード|9400/TCP|GPUメトリクス収集（GPU搭載のVCノードのみ）|
+
+また、クラウド上に起動したVCノードは、セットアップ時にパッケージ（chrony、Docker等）をインターネットから取得する。VCノードからインターネットへ接続できるようにしておくこと。
 
 > [!NOTE]
 > 事前準備用の参考資料が用意されているものは、事前に確認しておくこと
@@ -115,10 +129,11 @@ githubからzipでダウンロードして展開する、もしくは `git clone
 - Docker (composeプラグイン含) のインストール（未インストールの場合のみ実行）
 - 環境変数設定(`.env`)  
     ファイルが存在しない場合のみ生成される。以下の値は実行時に自動設定される（他の項目は[環境変数一覧](#環境変数一覧)のデフォルト値が使用される）。
+    - `OCCTR_IMAGE`: VCコントローラのコンテナイメージ（`init.sh` に記載されたバージョン）
     - `GF_SECURITY_ADMIN_PASSWORD`: ランダムなパスワードを生成
     - `CONSUL_INITIAL_TOKEN`: UUIDを生成
     - `VCP_VCC_PRIVATE_IPMASK`, `SERF_ADVERTISE`, `BC_REGISTRY_HOST`: 実行マシンのプライベートIPアドレスから自動設定
-- サービス間通信用SSL証明書作成  (`certs/`)  
+- サービス間通信用SSL証明書作成 (`cert/`)  
     jupyter環境からポータブルVCコントローラ・vaultに対してHTTPS通信を行うため、SSL証明書を準備する必要がある。証明書は、`cert/` ディレクトリに配置する（既に存在する場合は再作成しない）。
 - データ用ディレクトリ (`volume/`) の作成  
     各サービスが利用するデータディレクトリを作成し、コンテナ内で利用するユーザーに合わせて所有者・権限を設定する。
@@ -126,6 +141,10 @@ githubからzipでダウンロードして展開する、もしくは `git clone
     - `volume/vault/data`
     - `volume/grafana/data`
     - `volume/prometheus/data`
+
+> [!IMPORTANT]
+> `VCP_VCC_PRIVATE_IPMASK`, `SERF_ADVERTISE`, `BC_REGISTRY_HOST` には、実行マシンのループバック以外で最初に見つかったネットワークインタフェースのIPアドレスが設定される。  
+> 複数のネットワークインタフェースを持つマシンでは、生成された `.env` を確認し、VCノードから到達できるプライベートIPアドレスになっていない場合は、コンテナを起動する前に修正すること。
 
 ## 起動
 
@@ -136,7 +155,7 @@ githubからzipでダウンロードして展開する、もしくは `git clone
     ※ `init.sh` の実行により、最低限動作に必要な設定は行われている。  
 
     * 環境変数設定 (`.env`)
-    * サービス間通信用SSL証明書作成 (`certs`)
+    * サービス間通信用SSL証明書作成 (`cert/`)
 
 2. 起動  
 
@@ -147,7 +166,7 @@ githubからzipでダウンロードして展開する、もしくは `git clone
     # docker compose up -d --scale worker=2
     ```
 
-    コンテナが起動したことを確認する。
+    コンテナが起動したことを確認する。[サービス一覧](#サービス一覧)の各コンテナの STATUS が `Up` になっており、`worker` が指定した数だけ起動していればよい。
 
     ```
     # docker compose ps
@@ -172,6 +191,8 @@ githubからzipでダウンロードして展開する、もしくは `git clone
     ```
     s.xxxxxxxxxxxxxxxxxxxxxxxx
     ```
+
+    ここで発行したトークンは、`nobody` ユーザ（`regular` ロール）に割り当てられる。VC利用者ごとにトークンを発行する場合は、[VCP REST APIアクセストークンの発行](./manipulation.md#vcp-rest-apiアクセストークンの発行)を参照。
 
 - Jupyter Notebookサーバのログイン用トークンの確認  
 
@@ -218,6 +239,7 @@ VCコントローラから各種プロバイダ上に仮想マシンを起動す
 
 VCコントローラから、VCノードとして起動したインスタンスに対してプライベートIPアドレスでアクセス可能となるよう、ネットワーク設定を行う。  
 例えば、クラウド仮想ネットワークとVCコントローラ間をVPN接続するために IPsec 接続環境を準備する。  
+VCノードからVCコントローラへの通信も必要である。必要な通信の一覧は[ネットワーク要件](#ネットワーク要件)を参照。
 
 参考: [AWS サイト間 VPN (Site-to-Site VPN) 接続の機能を利用した IPsec 接続環境の構築例](examples.md#aws-サイト間-vpn-site-to-site-vpn-接続の機能を利用した-ipsec-接続環境の構築例)
 
@@ -236,10 +258,16 @@ VCコントローラから、VCノードとして起動したインスタンス�
 
     ![](./images/jupyter_first_login.png)
 
-- VCコントローラの動作確認  
+- VCコントローラの利用セットアップ  
 
     Jupyter Notebookサーバ上で、VCコントローラの利用セットアップを行う。  
-    `work/setup/credential_setup.ipynb` を開き、ノートブック上の説明に従って、利用するクラウドプロバイダの認証情報を登録する。  
+    `work/setup/credential_setup.ipynb` を開き、ノートブック上の説明に従って、以下を行う。  
+
+    1. VCコントローラ用のアクセストークンを入力し、VCP SDKクライアントを初期化する。
+    2. 利用するクラウドプロバイダの認証情報を入力し、Vaultへ登録する。
+
+    認証情報は、手順1で入力したアクセストークンごとに保存される。別のアクセストークンで操作する場合は、そのアクセストークンで改めて登録する。  
+    詳細は [Jupyter](./services/jupyter.md) を参照。
 
 
 ## 補足
@@ -250,6 +278,10 @@ VCコントローラから、VCノードとして起動したインスタンス�
 前段に別のロードバランサやリバースプロキシを配置してそちら側でTLS終端を行う構成や、`localhost` 等でのローカル動作確認を行う場合は、デフォルト設定のままでよい。  
 一方、nginx自身でTLS終端を行い、VC利用者のブラウザ等から、VCコントローラ設置マシンに付与したグローバルIPアドレスに対応するFQDNへ直接HTTPSアクセスさせたい場合は、証明書の設定を行う。  
 参考: [TLS設定](examples.md#tls設定)
+
+> [!IMPORTANT]
+> 標準構成では、Jupyter、Grafana、Consul の画面と Consul の HTTP API が、8080 番ポートから HTTP で公開される。  
+> VCコントローラをインターネットから到達できる場所に設置する場合は、ファイアウォールやセキュリティグループで 8080 番ポートへの接続元を制限するか、TLS を設定すること。
 
 ### Web UI
 
@@ -280,7 +312,7 @@ VCPの利用者は、`vcpsdk`（VCコントローラ用のPythonクライアン�
 # docker compose logs jupyter | grep token
 ```
 
-ログイン後、`work/setup/credential_setup.ipynb` を開き、VCコントローラ用アクセストークン（[VCP REST APIアクセストークンの発行](manipulation.md#vcp-rest-apiアクセストークンの発行)で発行したもの）を設定してVCP SDKクライアントを初期化することで、VCコントローラの機能が利用できる。
+ログイン後、`work/setup/credential_setup.ipynb` を開き、VCコントローラ用アクセストークン（[VCP REST APIアクセストークンの発行](manipulation.md#vcp-rest-apiアクセストークンの発行)で発行したもの）を設定してVCP SDKクライアントを初期化し、利用するクラウドプロバイダの認証情報を登録することで、VCコントローラの機能が利用できる。
 
 詳細は [Jupyter](./services/jupyter.md) を参照。
 
@@ -314,7 +346,7 @@ VCコントローラのイメージ変更や停止・再起動等については
 ||CONSUL_TOKEN | VCCがconsul kvsを利用するためのトークン | | 指定した場合、`CONSUL_TOKEN_FILE` より優先される |
 ||CONSUL_HTTP_ADDR | Consulのアドレス | `localhost:8500` | |
 ||CONSUL_KVS_URL | Consul kvs のURL | `http://{CONSUL_HTTP_ADDR}/v1/kv` | |
-||BC_REGISTRY_HOST | コンテナレジストリホスト | `harbor.vcloud.nii.ac.jp` | ポートは固定で`5000`を使用 |
+||BC_REGISTRY_HOST | ベースコンテナイメージを取得するレジストリ | `harbor.vcloud.nii.ac.jp` | ホスト名とポート番号を `:` で結合して指定する（例: `192.168.1.10:5000`）。`init.sh` は実行マシンのIPアドレスと registry-vcpmirror のポート `5000` を設定する |
 ||REQUESTS_CA_BUNDLE | SSL証明書のパス | `/etc/ssl/certs/ca-certificates.crt` | |
 ||VAULT_API_URL | VaultAPIアクセス用URL | `https://localhost:8200/v1` | |
 ||REDIS_HOST | redisアクセス用ホスト指定 | `localhost` | |

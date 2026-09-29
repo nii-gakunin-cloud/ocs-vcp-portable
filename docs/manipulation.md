@@ -78,7 +78,7 @@ docker compose restart nginx
 
 ### Grafana管理者パスワードの変更
 
-`GF_SECURITY_ADMIN_PASSWORD` はGrafanaの初回起動時（管理者アカウント作成時）にのみ反映される値であり、`grafana-data` ボリュームが既に存在する状態で `.env` を書き換えて再起動しても、稼働中のパスワードは変更されない。  
+`GF_SECURITY_ADMIN_PASSWORD` はGrafanaの初回起動時（管理者アカウント作成時）にのみ反映される値であり、`volume/grafana/data` にデータが残っている状態で `.env` を書き換えて再起動しても、稼働中のパスワードは変更されない。  
 稼働中のパスワードを変更する場合は、Grafanaのコマンドを使用する。
 
 ```
@@ -87,7 +87,7 @@ docker compose exec grafana grafana cli admin reset-admin-password <新しいパ
 
 ### Consul初期トークン(`CONSUL_INITIAL_TOKEN`)について
 
-`CONSUL_INITIAL_TOKEN` はConsulのACLブートストラップ時（初回起動時）にのみ反映される値であり、一度ブートストラップされたトークンは `consul-data` ボリュームに永続化される。そのため、稼働開始後に `.env` を書き換えてコンテナを再起動しても、稼働中のトークンはローテーションされない。
+`CONSUL_INITIAL_TOKEN` はConsulのACLブートストラップ時（初回起動時）にのみ反映される値であり、一度ブートストラップされたトークンは `volume/consul/data` に永続化される。そのため、稼働開始後に `.env` を書き換えてコンテナを再起動しても、稼働中のトークンはローテーションされない。
 
 > [!CAUTION]
 > Consul初期トークンの更新は非サポート
@@ -138,11 +138,15 @@ VC利用者に対して発行することができる。
 # docker compose exec occtr vcc token create [USER_NAME]
 ```
 
-以下のような文字列が表示される。この文字列をVCP利用者に配布し、VCC REST APIアクセストークンとして設定して使用する。
+以下のような文字列が表示される。この文字列をVCP利用者に配布し、VCP REST APIアクセストークンとして設定して使用する。
 
 ```
 s.xxxxxxxxxxxxx
 ```
+
+> [!NOTE]
+> クラウドプロバイダの認証情報は、アクセストークンごとに保存される。VC利用者は、配布されたアクセストークンを使って `work/setup/credential_setup.ipynb` を実行し、自身の認証情報を登録する。  
+> VC利用者ごとにトークンを発行する場合は、先に[VCコントローラのユーザの管理](#vcコントローラのユーザの管理)でユーザを登録し、そのユーザ名を指定してトークンを発行する。
 
 ### クラウド仮想ネットワーク定義ファイルの更新
 
@@ -158,7 +162,7 @@ s.xxxxxxxxxxxxx
 cci_version: '1.0'
 
 aws:
-default:
+  default:
     aws_region: ap-northeast-1
     aws_vpc_subnet_id: subnet-fffffffffffffffff
     aws_vpc_security_group_id: sg-fffffffffffffffff
@@ -166,7 +170,8 @@ default:
     private_network_ipmask: 172.30.2.0/24
 ```
 
-`config/vpn_catalog.yml` は変更後に反映する必要がある。反映するには、以下のコマンドを実行する。  
+VCコントローラの起動時に `config/vpn_catalog.yml` が存在する場合は、その内容が自動的に反映される。  
+起動後に `config/vpn_catalog.yml` を変更した場合は、以下のコマンドを実行して反映する。  
 
 ```
 docker compose exec occtr vcc vpncatalog set
