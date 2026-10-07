@@ -2,8 +2,6 @@ services:
   occtr:
     image: ${OCCTR_IMAGE}
     restart: unless-stopped
-    # networks:
-    #   - vcp-internal
     volumes:
       - ./cert:/opt/occ/httpd/cert/:ro
       - ./config:/opt/occ/config:ro
@@ -25,8 +23,6 @@ services:
       - vault
       - consul
   nginx:
-    # networks:
-    #   - vcp-public
     image: nginx
     restart: unless-stopped
     ports:
@@ -39,10 +35,8 @@ services:
       - grafana
       - consul
   jupyter:
-    image: harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:lab-4.5.7-simple
+    image: harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:lab-4.5.0
     restart: unless-stopped
-    # networks:
-    #   - vcp-internal
     user: root
     volumes:
       - ./cert/occtr_ca.crt:/usr/local/share/ca-certificates/occtr_ca.crt:ro
@@ -64,8 +58,6 @@ services:
   registry-vcpmirror:
     image: registry:3
     restart: unless-stopped
-    # networks:
-    #   - vcp-internal
     ports:
       - "5000:5000"
     environment:
@@ -75,8 +67,6 @@ services:
   registry-local:
     image: registry:3
     restart: unless-stopped
-    # networks:
-    #   - vcp-internal
     ports:
       - "5001:5000"
     volumes:
@@ -97,8 +87,6 @@ services:
   prometheus:
     image: prom/prometheus:v2.49.0
     restart: unless-stopped
-    # networks:
-    #   - monitoring
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./volume/prometheus/data:/prometheus
@@ -218,10 +206,3 @@ services:
       - ./volume/opt/occ/vc:/opt/occ/vc
     depends_on:
       - redis
-# networks:
-#   vcp-public:
-#     driver: bridge
-#   vcp-internal:
-#     driver: bridge
-#   monitoring:
-#     driver: bridge
