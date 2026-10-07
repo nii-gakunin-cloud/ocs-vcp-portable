@@ -1,0 +1,859 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /occtr/accounts/authority:
+    get:
+      operationId: accounts_authority_retrieve
+      description: VCC APIアクセストークンの権限を確認する
+      tags:
+      - accounts
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/health:
+    get:
+      operationId: health_retrieve
+      tags:
+      - health
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/publickey:
+    get:
+      operationId: publickey_retrieve
+      description: 公開鍵取得
+      tags:
+      - publickey
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs:
+    get:
+      operationId: vcs_retrieve
+      description: VC情報(すべて)
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: vcs_create
+      description: VC作成
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}:
+    get:
+      operationId: vcs_retrieve_2
+      description: VC情報取得
+      parameters:
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: vcs_create_2
+      description: Unit追加
+      parameters:
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: vcs_update
+      description: VC情報更新
+      parameters:
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: vcs_partial_update
+      description: |-
+        VCに対する変更。
+        現状、change_ownerのみ。
+      parameters:
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: vcs_destroy
+      description: VC削除
+      parameters:
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}:
+    get:
+      operationId: vcs_retrieve_3
+      description: Unit情報取得
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: vcs_update_2
+      description: Node/Disk追加
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: vcs_destroy_2
+      description: Unit削除
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}:
+    get:
+      operationId: vcs_retrieve_4
+      description: Node情報取得
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: vcs_destroy_3
+      description: Node削除
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}/backup:
+    get:
+      operationId: vcs_backup_retrieve
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}/power_off:
+    patch:
+      operationId: vcs_power_off_partial_update_2
+      description: VCノードのパワーオフ
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}/power_on:
+    patch:
+      operationId: vcs_power_on_partial_update_2
+      description: VCノードのパワーオン
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}/resume:
+    patch:
+      operationId: vcs_resume_partial_update_2
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}/start:
+    patch:
+      operationId: vcs_start_partial_update_2
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}/stop:
+    patch:
+      operationId: vcs_stop_partial_update_2
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}/suspend:
+    patch:
+      operationId: vcs_suspend_partial_update_2
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}/unwatch:
+    patch:
+      operationId: vcs_unwatch_partial_update_2
+      description: Nodeのsshによる監視を無効にする
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/{node_id}/watch:
+    patch:
+      operationId: vcs_watch_partial_update_2
+      description: Nodeのsshによる監視を有効にする
+      parameters:
+      - in: path
+        name: node_id
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/clear_processing:
+    patch:
+      operationId: vcs_clear_processing_partial_update
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/power_off:
+    patch:
+      operationId: vcs_power_off_partial_update
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/power_on:
+    patch:
+      operationId: vcs_power_on_partial_update
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/resume:
+    patch:
+      operationId: vcs_resume_partial_update
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/start:
+    patch:
+      operationId: vcs_start_partial_update
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/stop:
+    patch:
+      operationId: vcs_stop_partial_update
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/suspend:
+    patch:
+      operationId: vcs_suspend_partial_update
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/unwatch:
+    patch:
+      operationId: vcs_unwatch_partial_update
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/{vcid}/{unit_name}/watch:
+    patch:
+      operationId: vcs_watch_partial_update
+      parameters:
+      - in: path
+        name: unit_name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9_\-]+$
+        required: true
+      - in: path
+        name: vcid
+        schema:
+          type: string
+          pattern: ^\w+$
+        required: true
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vcs/fail:
+    post:
+      operationId: vcs_fail_create
+      description: VC故障通知
+      tags:
+      - vcs
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/version:
+    get:
+      operationId: version_retrieve
+      tags:
+      - version
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /occtr/vpn_catalog:
+    get:
+      operationId: vpn_catalog_retrieve
+      tags:
+      - vpn_catalog
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

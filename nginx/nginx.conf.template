@@ -1,0 +1,73 @@
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        ''      close;
+    }
+
+    upstream grafana {
+       server grafana:3000;
+    }
+
+    upstream jupyter {
+       server jupyter:8888;
+    }
+
+    upstream consul {
+       server consul:8500;
+    }
+
+    server {
+        listen 8080;
+        server_name localhost;
+        client_max_body_size 20M;
+
+        location /jupyter/ {
+            proxy_pass http://jupyter/jupyter/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $http_host;
+            proxy_set_header Origin http://$http_host;
+        }
+
+        # grafanaに subdir /grafana/ でアクセスできるようにする
+        location /grafana/ {
+            proxy_set_header Host $host;
+            proxy_pass http://grafana;
+        }
+
+        # Proxy Grafana Live WebSocket connections.
+        location /grafana/api/live/ {
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $host;
+            proxy_pass http://grafana;
+        }
+        # Consul ui
+        location /consul/ {
+            proxy_pass http://consul/consul/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $http_host;
+            proxy_set_header Origin http://$http_host;
+        }
+        # consul HTTP API (does not support subdir)
+        location /v1/ {
+            proxy_pass http://consul/v1/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $http_host;
+            proxy_set_header Origin http://$http_host;
+        }
+        # # prometheus
+        # location /prometheus/ {
+        #     proxy_pass http://occtr:9090/;
+        #     proxy_http_version 1.1;
+        #     proxy_set_header Upgrade $http_upgrade;
+        #     proxy_set_header Connection "upgrade";
+        #     proxy_set_header Host $http_host;
+        #     proxy_set_header Origin http://$http_host;
+        # }
+    }

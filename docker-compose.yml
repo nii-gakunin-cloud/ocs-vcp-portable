@@ -1,40 +1,208 @@
-# 1. .envまたは本ファイルのenviroment部分に以下の変数を設定すること
-# 例:VCP_VCC_PRIVATE_IPMASK=192.168.1.2/24
-# VCP_VCC_PRIVATE_IPMASK=
-# VCP_OFFICIAL_REGISTRY_ADDRESS=harbor.vcloud.nii.ac.jp
-# 2. cert ディレクトリに必要な証明書を入れておくこと
-# ca.pem
-# occtr_cert.pem
-# occctr_key.pem
-
 services:
-  # rc, 利用者に提供するもの
   occtr:
-    image: harbor.vcloud.nii.ac.jp/vcp/occtr:${TAG}
-    network_mode: host
-    # port
-    # VCP REST API
-    # 443
-    # Vault
-    # 8443
+    image: ${OCCTR_IMAGE}
+    restart: unless-stopped
     volumes:
-      # SSL CA cert (ca.crt)
-      # 設定: SSL CA server cert, key occtr_cert.pem, occtr_cert.key
-      - ./cert:/opt/occ/etc/httpd/ssl_conf/cert/:ro
-      - ./config:/opt/occ/env/occtr/docker/config:ro
-
-      # VCコントローラで永続化したいデータ
+      - ./cert:/opt/occ/httpd/cert/:ro
+      - ./config:/opt/occ/config:ro
       - ./volume/opt/occ/var:/opt/occ/var
       - ./volume/opt/occ/.ssh:/opt/occ/.ssh
       - ./volume/opt/occ/vc:/opt/occ/vc
     environment:
-      - VCP_VCC_PRIVATE_IPMASK=${VCP_VCC_PRIVATE_IPMASK}
-      - VCP_OFFICIAL_REGISTRY_ADDRESS=${VCP_OFFICIAL_REGISTRY_ADDRESS}
-      - CONSUL_BASE_URL=${CONSUL_BASE_URL}
-
-  # grafanaを /grafana のsubdirで提供するように設定済み
+      - VCP_VCC_PRIVATE_IPMASK=${VCP_VCC_PRIVATE_IPMASK:?}
+      - CONSUL_INITIAL_TOKEN=${CONSUL_INITIAL_TOKEN:?}
+      - MANAGE_VAULT=true
+      - REDIS_HOST=redis
+      - VAULT_API_URL=https://vault:8200/v1
+      - CONSUL_HTTP_ADDR=consul:8500
+      - CONSUL_HTTP_TOKEN_FILE=/opt/occ/var/occtr/consul_token
+      - BC_REGISTRY_HOST=${BC_REGISTRY_HOST:-harbor.vcloud.nii.ac.jp}
+    command: ["server"]
+    depends_on:
+      - serf
+      - vault
+      - consul
   nginx:
-    image: nginx:1.27.3
-    network_mode: host
+    image: nginx
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
     volumes:
-       - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+       - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
+      #  - ./nginx/certs:/etc/nginx/certs:ro # サーバ証明書を配置する場合
+    depends_on:
+      - jupyter
+      - grafana
+      - consul
+  jupyter:
+    image: harbor.vcloud.nii.ac.jp/vcpjupyter/cloudop-notebook:lab-4.5.0
+    restart: unless-stopped
+    user: root
+    volumes:
+      - ./cert/occtr_ca.crt:/usr/local/share/ca-certificates/occtr_ca.crt:ro
+      - ./volume/jupyter/work:/home/jovyan/work
+      - ./volume/jupyter/.ssh:/home/jovyan/.ssh
+      - ./volume/jupyter/.jupyter:/home/jovyan/.jupyter
+    environment:
+      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+      - TZ=JST-9
+      - JUPYTER_PORT=8888
+      - CHOWN_HOME=yes
+      - CHOWN_HOME_OPTS=-R
+      - VAULT_URL=https://vault:8200/v1
+      - VCPSDK_CONFIG_DIR=/home/jovyan/work/setup
+    # Full config: https://jupyter-server.readthedocs.io/en/latest/users/configuration.html
+    command:
+      - start-notebook.py
+      - --ServerApp.base_url=/jupyter/
+  registry-vcpmirror:
+    image: registry:3
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - REGISTRY_PROXY_REMOTEURL=https://harbor.vcloud.nii.ac.jp
+    volumes:
+      - ./volume/registry-vcpmirror/data:/var/lib/registry
+  registry-local:
+    image: registry:3
+    restart: unless-stopped
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./volume/registry-local/data:/var/lib/registry
+  grafana:
+    image: grafana/grafana:12.2.0
+    restart: unless-stopped
+    # networks:
+    #   - monitoring
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./volume/grafana/data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD:?GF_SECURITY_ADMIN_PASSWORD environment variable is required}
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/
+  prometheus:
+    image: prom/prometheus:v2.49.0
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./volume/prometheus/data:/prometheus
+      - ./volume/prometheus/targets.json:/etc/prometheus/targets.json
+  serf:
+    build:
+      context: ./serf
+    restart: unless-stopped
+    ports:
+      - "7947:7947"
+    volumes:
+      - ./volume/prometheus/targets.json:/etc/prometheus/targets.json
+      - ./volume/serf/data:/usr/share/serf
+    command: [
+      "agent",
+      "-node=${SERF_NODE:-serf}",
+      "-rpc-addr=${SERF_RPC_ADDR:-0.0.0.0:7373}",
+      "-bind=${SERF_BIND_ADDR:-0.0.0.0:7947}",
+      "-discover=${SERF_DISCOVER:-portable_vcc_cluster}",
+      "-advertise=${SERF_ADVERTISE:?Set host IP address to advertise to other nodes in the cluster}",
+      "-event-handler=/usr/local/bin/event-handler.sh",
+      "-snapshot=/usr/share/serf/snapshot",
+      "-tag=role=pvcc"
+    ]
+  consul:
+    image: hashicorp/consul:1.16
+    restart: unless-stopped
+    volumes:
+      - ./consul/config/default.json.template:/consul/config/default.json.template:ro
+      - ./consul/vcp-entrypoint.sh:/usr/local/bin/vcp-entrypoint.sh:ro
+      - ./volume/consul/data:/consul/data
+    entrypoint: ["/bin/sh", "/usr/local/bin/vcp-entrypoint.sh"]
+    command: [
+      "agent",
+      "-bootstrap",
+      "-server",
+      "-datacenter=local",
+      "-ui",
+      "-ui-content-path=/consul",
+      "-node=server.pvcc",
+      "-client=0.0.0.0",
+      "-bind=127.0.0.1",
+      "-advertise=127.0.0.1",
+      "-config-dir=/consul/config",
+      "-data-dir=/consul/data"
+    ]
+    environment:
+      - CONSUL_UI_CONTENT_PATH=${CONSUL_UI_CONTENT_PATH:-/consul}
+      - CONSUL_INITIAL_TOKEN=${CONSUL_INITIAL_TOKEN:?}
+  # cadvisor:
+  #   image: ghcr.io/google/cadvisor:0.60.3
+  #   privileged: true
+  #   devices:
+  #     - /dev/kmsg:/dev/kmsg:ro
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #     - /dev/disk/:/dev/disk:ro
+  # fluentd:
+  #   image: fluent/fluentd:v1.16-debian
+  #   volumes:
+  #     - ./conf/:/fluentd/etc
+  #   ports:
+  #     - "24224:24224"
+  #     - "24224:24224/udp"
+
+  vault:
+    restart: unless-stopped
+    build:
+      context: ./vault
+    volumes:
+      - ./cert:/bao/cert:ro
+      - ./volume/vault/data:/bao/data
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+  worker-update:
+    restart: unless-stopped
+    image: ${OCCTR_IMAGE}
+    command: ["rq", "worker", "--path", "/opt/occ",
+              "--url", "redis://redis:6379",
+              "--date-format='%Y-%m-%d %H:%M:%S'",
+              "state_update"
+              ]
+    environment:
+      - PYTHONPATH=/opt/occ
+      - CONSUL_KVS_URL=http://consul:8500/v1/kv
+      - VAULT_API_URL=https://vault:8200/v1
+    volumes:
+      - ./cert:/opt/occ/httpd/cert/:ro
+      - ./config:/opt/occ/config:ro
+      - ./volume/opt/occ/var:/opt/occ/var
+      - ./volume/opt/occ/.ssh:/opt/occ/.ssh
+      - ./volume/opt/occ/vc:/opt/occ/vc
+    depends_on:
+      - redis
+  # --scale worker=3 等で起動数を指定する
+  worker:
+    restart: unless-stopped
+    image: ${OCCTR_IMAGE}
+    command: ["rq", "worker", "--path", "/opt/occ",
+              "--url", "redis://redis:6379",
+              "--date-format='%Y-%m-%d %H:%M:%S'",
+              "default"
+              ]
+    environment:
+      - PYTHONPATH=/opt/occ
+      - CONSUL_KVS_URL=http://consul:8500/v1/kv
+      - VAULT_API_URL=https://vault:8200/v1
+    volumes:
+      - ./cert:/opt/occ/httpd/cert/:ro
+      - ./config:/opt/occ/config:ro
+      - ./volume/opt/occ/var:/opt/occ/var
+      - ./volume/opt/occ/.ssh:/opt/occ/.ssh
+      - ./volume/opt/occ/vc:/opt/occ/vc
+    depends_on:
+      - redis

@@ -1,0 +1,12 @@
+{
+  "enable_script_checks": true,
+  "acl": {
+    "enabled": true,
+    "enable_token_persistence": true,
+    "default_policy": "deny",
+    "enable_key_list_policy": true,
+    "tokens": {
+      "initial_management": "$CONSUL_INITILAL_TOKEN"
+    }
+  }
+}
